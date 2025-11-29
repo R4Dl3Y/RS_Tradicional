@@ -150,3 +150,107 @@ CREATE TRIGGER definir_data_publicacao
 BEFORE INSERT ON Noticia
 FOR EACH ROW
 EXECUTE FUNCTION trg_definir_data_publicacao();
+
+
+------------------------------------------------------------------------------------------
+
+-- Trigger – NIF único em Utilizador
+
+-- Impede NIF duplicado em Utilizador
+DROP FUNCTION IF EXISTS trg_verifica_nif_utilizador() CASCADE;
+DROP TRIGGER IF EXISTS verifica_nif_utilizador ON Utilizador;
+
+CREATE OR REPLACE FUNCTION trg_verifica_nif_utilizador()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_exists INT;
+BEGIN
+    IF NEW.nif IS NOT NULL THEN
+        SELECT COUNT(*) INTO v_exists
+        FROM Utilizador
+        WHERE nif = NEW.nif
+          AND id_utilizador <> COALESCE(NEW.id_utilizador, -1);
+
+        IF v_exists > 0 THEN
+            RAISE EXCEPTION 'Já existe um utilizador com o NIF %', NEW.nif;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER verifica_nif_utilizador
+BEFORE INSERT OR UPDATE ON Utilizador
+FOR EACH ROW
+EXECUTE FUNCTION trg_verifica_nif_utilizador();
+
+
+--Trigger – Validar preço e stock em Produto
+-- Garante preço e stock válidos no Produto
+DROP FUNCTION IF EXISTS trg_valida_produto() CASCADE;
+DROP TRIGGER IF EXISTS valida_produto ON Produto;
+
+CREATE OR REPLACE FUNCTION trg_valida_produto()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.preco IS NULL OR NEW.preco < 0 THEN
+        RAISE EXCEPTION 'Preço do produto % inválido (não pode ser negativo ou nulo)', NEW.nome;
+    END IF;
+
+    IF NEW.stock IS NULL OR NEW.stock < 0 THEN
+        RAISE EXCEPTION 'Stock do produto % inválido (não pode ser negativo ou nulo)', NEW.nome;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER valida_produto
+BEFORE INSERT OR UPDATE ON Produto
+FOR EACH ROW
+EXECUTE FUNCTION trg_valida_produto();
+
+
+-- Trigger - Impede finalizar carrinho sem linhas de produtos
+DROP FUNCTION IF EXISTS trg_valida_carrinho_finalizado() CASCADE;
+DROP TRIGGER IF EXISTS valida_carrinho_finalizado ON Carrinho;
+
+CREATE OR REPLACE FUNCTION trg_valida_carrinho_finalizado()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_desc_estado   TEXT;
+    v_qtd_linhas    INT;
+BEGIN
+    -- Obtem a descrição do estado novo
+    SELECT descricao INTO v_desc_estado
+    FROM Estado_Carrinho
+    WHERE id_estado = NEW.estado;
+
+    -- Só valida se o estado for 'Finalizado'
+    IF v_desc_estado = 'Finalizado' THEN
+        SELECT COUNT(*) INTO v_qtd_linhas
+        FROM Produto_Carrinho
+        WHERE id_carrinho = NEW.id_carrinho;
+
+        IF v_qtd_linhas = 0 THEN
+            RAISE EXCEPTION 'Não é possível finalizar um carrinho sem produtos (id_carrinho=%).',
+                NEW.id_carrinho;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER valida_carrinho_finalizado
+BEFORE UPDATE ON Carrinho
+FOR EACH ROW
+EXECUTE FUNCTION trg_valida_carrinho_finalizado();
+
