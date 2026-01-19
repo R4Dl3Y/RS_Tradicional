@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Carrinho - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Loja · Carrinho</span>
+            <h2 class="admin-title">O teu carrinho</h2>
+            <p class="admin-subtitle">
+                Revê os produtos antes de finalizar a encomenda.
+            </p>
+        </div>
+        <div class="admin-hero-user" style="gap:0.75rem;">
+            {% if carrinho and linhas %}
+                <div class="admin-pill">
+                    Total:
+                    <strong>{{ total_encomenda }} €</strong>
+                </div>
+            {% endif %}
+
+            <a href="{% url 'loja_produtos' %}" class="btn">Continuar a comprar</a>
+
+            {% if carrinho and linhas %}
+                <form method="post"
+                      action="{% url 'loja_finalizar_encomenda' %}"
+                      style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Finalizar encomenda
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </section>
+
+    <section>
+        {% if carrinho and linhas %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço unit.</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                        <th style="width: 120px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in linhas %}
+                        <tr>
+                            <td>{{ linha.id_produto.nome }}</td>
+                            <td>{{ linha.id_produto.preco }} €</td>
+                            <td>{{ linha.quantidade }}</td>
+                            <td>
+                                {% if linha.id_produto.preco %}
+                                    {{ linha.id_produto.preco|floatformat:2 }} € × {{ linha.quantidade }}
+                                {% endif %}
+                            </td>
+                            <td class="admin-table-actions">
+                                <form method="post"
+                                      action="{% url 'loja_remover_linha' linha.id %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="admin-table-link admin-table-link-danger"
+                                            style="border:none;background:none;padding:0;cursor:pointer;">
+                                        Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>O teu carrinho está vazio.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

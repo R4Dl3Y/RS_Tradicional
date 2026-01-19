@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Remover Notícia - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Notícias</span>
+            <h2 class="admin-title">Remover Notícia</h2>
+            <p class="admin-subtitle">
+                Tens a certeza que queres remover a notícia
+                <strong>{{ noticia.titulo }}</strong> (ID {{ noticia.id_noticia }})?
+                Esta ação não pode ser desfeita.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <form method="post" class="admin-delete-form">
+            {% csrf_token %}
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_noticia_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary admin-btn-danger">Remover</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

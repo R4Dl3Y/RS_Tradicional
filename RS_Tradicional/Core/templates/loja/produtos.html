@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Loja - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Loja</span>
+            <h2 class="admin-title">Produtos disponíveis</h2>
+            <p class="admin-subtitle">
+                Escolhe os teus produtos favoritos e adiciona-os ao carrinho.
+                Só aparecem produtos ativos e aprovados.
+            </p>
+        </div>
+        <div class="admin-hero-user">
+            <a href="{% url 'loja_carrinho' %}" class="btn">Ver carrinho</a>
+        </div>
+    </section>
+
+    <section>
+        {% if produtos %}
+            <div class="home-grid">
+                {% for p in produtos %}
+                    <article class="home-card">
+                        <h4 class="home-card-title">{{ p.nome }}</h4>
+
+                        {% if p.descricao %}
+                            <p class="home-card-text">{{ p.descricao }}</p>
+                        {% endif %}
+
+                        <p class="home-card-text">
+                            <strong>{{ p.preco }} €</strong>
+                        </p>
+
+                        <p class="home-card-text">
+                            Stock: {{ p.stock }}
+                        </p>
+
+                        <form method="post"
+                              action="{% url 'loja_adicionar_produto' p.id_produto %}"
+                              class="admin-form-inline">
+                            {% csrf_token %}
+                            <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem;">
+                                <input type="number"
+                                       name="quantidade"
+                                       value="1"
+                                       min="1"
+                                       style="width:70px; padding:0.2rem 0.4rem; border-radius:0.5rem; border:1px solid #e5b3c6;">
+                                <button type="submit" class="btn btn-primary">
+                                    Adicionar
+                                </button>
+                            </div>
+                        </form>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>De momento não existem produtos disponíveis na loja.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

@@ -1,115 +1,112 @@
-BEGIN;
+-- ==========================
+-- DADOS INICIAIS
+-- ==========================
 
--- =========================
--- TIPO_UTILIZADOR
--- =========================
-INSERT INTO Tipo_Utilizador (id_tipo_utilizador, designacao) VALUES
-  (1, 'Administrador'),
-  (2, 'Funcionário');
-  (3, 'Cliente');
+-- TIPOS DE UTILIZADOR
+INSERT INTO Tipo_Utilizador (designacao) VALUES
+    ('Admin'),
+    ('Gestor'),
+    ('Cliente');
 
--- =========================
--- UTILIZADOR
--- =========================
-INSERT INTO Utilizador (id_utilizador, nome, email, password, morada, nif, imagem_perfil, id_tipo_utilizador) VALUES
-  (1, 'Ana Silva',   'ana.silva@example.com',   'hash_password_ana',   'Rua das Flores 10, Lisboa', '123456789', '/imgs/utilizadores/1.png', 1),
-  (2, 'Bruno Costa', 'bruno.costa@example.com', 'hash_password_bruno', 'Av. do Mar 200, Porto',     '987654321', '/imgs/utilizadores/2.png', 2);
+-- UTILIZADORES (ADMIN / GESTOR / CLIENTE)
+-- Substituir <HASH_...> pelas hashes reais geradas com make_password
+INSERT INTO Utilizador (nome, email, password, morada, nif, id_tipo_utilizador) VALUES
+    ('Administrador RS', 'admin@rstradicional.pt',  '<HASH_ADMIN>',  'Rua Principal 1, Viseu', '111111111', 1),
+    ('Gestor RS',        'gestor@rstradicional.pt', '<HASH_GESTOR>', 'Av. Central 25, Viseu',  '222222222', 2),
+    ('Cliente Teste',    'cliente@rstradicional.pt','<HASH_CLIENTE>','Rua do Cliente 3, Viseu','333333333', 3);
 
--- =========================
--- FORNECEDOR
--- Nota: isSingular = true permite morada NULL; se false, morada é obrigatória
--- =========================
-INSERT INTO Fornecedor (id_fornecedor, nome, contacto, email, nif, isSingular, morada, imagem_fornecedor) VALUES
-  (1, 'Quinta do Vale', '+351912345678', 'contacto@qvale.pt', '111222333', true,  NULL,                              '/imgs/fornecedores/1.png'),
-  (2, 'Alimentos SA',   '+351210000000', 'geral@alimentos.sa', '222333444', false, 'Parque Industrial, Lote 5, Braga','/imgs/fornecedores/2.png');
+-- FORNECEDOR EXEMPLO
+INSERT INTO Fornecedor (nome, contacto, email, nif, isSingular, morada, imagem_fornecedor) VALUES
+    ('Queijaria da Serra', '+351912345678', 'contato@queijariadaserra.pt', '444444444',
+     FALSE, 'Parque Industrial, Armazém 4, Gouveia', '/imagens/fornecedores/queijaria_serra.png');
 
--- =========================
--- TIPO_PRODUTO
--- =========================
-INSERT INTO Tipo_Produto (id_tipo_produto, designacao) VALUES
-  (1, 'Bebidas'),
-  (2, 'Mercearia');
+-- TIPOS DE PRODUTO
+INSERT INTO Tipo_Produto (designacao) VALUES
+    ('Queijos Tradicionais'),
+    ('Enchidos Regionais');
 
-SELECT setval('tipo_produto_id_tipo_produto_seq', 2, true);
+-- PRODUTOS
+-- 1: produto já aprovado e ativo (criado pela própria loja / gestor)
+INSERT INTO Produto (nome, descricao, preco, stock, is_approved, estado_produto, id_tipo_produto, id_fornecedor) VALUES
+    ('Queijo da Serra DOP',
+     'Queijo curado de ovelha, cura mínima de 60 dias.',
+     14.50,
+     20,
+     TRUE,
+     'Ativo',
+     1,   -- Queijos Tradicionais
+     1);  -- Queijaria da Serra
 
--- =========================
--- PRODUTO
--- =========================
-INSERT INTO Produto (id_produto, nome, descricao, preco, stock, id_tipo_produto, id_fornecedor) VALUES
-  (1, 'Sumo de Laranja 1L', 'Sumo 100% laranja, sem adição de açúcar.', 1.99, 100, 1, 1),
-  (2, 'Bolachas de Aveia',  'Bolachas crocantes de aveia integral.',     2.49,  50, 2, 2);
+-- 2: produto ainda PENDENTE (imagina que foi sugerido por fornecedor/gestor)
+INSERT INTO Produto (nome, descricao, preco, stock, is_approved, estado_produto, id_tipo_produto, id_fornecedor) VALUES
+    ('Queijo de Cabra Curado',
+     'Queijo curado de cabra, sabor intenso.',
+     9.90,
+     15,
+     FALSE,
+     'Pendente',
+     1,
+     1);
 
-SELECT setval('produto_id_produto_seq', 2, true);
+-- IMAGENS DOS PRODUTOS (OPCIONAL)
+INSERT INTO Imagem_Produto (id_produto, caminho) VALUES
+    (1, '/imagens/produtos/queijo_serra_dop.jpg'),
+    (2, '/imagens/produtos/queijo_cabra_curado.jpg');
 
--- =========================
--- IMAGEM_PRODUTO
--- =========================
-INSERT INTO Imagem_Produto (id_imagem, id_produto, caminho) VALUES
-  (1, 1, '/imgs/produtos/1.png'),
-  (2, 2, '/imgs/produtos/2.png');
+-- TIPOS DE NOTÍCIA
+INSERT INTO Tipo_Noticia (nome) VALUES
+    ('Promoções'),
+    ('Novidades');
 
-SELECT setval('imagem_produto_id_imagem_seq', 2, true);
+-- NOTÍCIA EXEMPLO
+INSERT INTO Noticia (titulo, conteudo, id_tipo_noticia, autor, data_publicacao) VALUES
+    ('Bem-vindo à RS Tradicional',
+     'A nossa loja online já está em funcionamento com os melhores produtos regionais.',
+     2,   -- Novidades
+     1,   -- Autor: Admin
+     CURRENT_DATE);
 
--- =========================
--- ESTADO_CARRINHO
--- =========================
-INSERT INTO Estado_Carrinho (id_estado, descricao) VALUES
-  (1, 'Aberto'),
-  (2, 'Pago'),
-  (3, 'Cancelado');
+-- IMAGEM DA NOTÍCIA (OPCIONAL)
+INSERT INTO Imagem_Noticia (id_noticia, uri) VALUES
+    (1, '/imagens/noticias/boas_vindas.jpg');
 
-SELECT setval('estado_carrinho_id_estado_seq', 3, true);
-
--- =========================
--- CARRINHO
--- =========================
-INSERT INTO Carrinho (id_carrinho, id_utilizador, estado) VALUES
-  (1, 1, 1),  -- Ana, Aberto
-  (2, 2, 2);  -- Bruno, Pago
-
-SELECT setval('carrinho_id_carrinho_seq', 2, true);
-
--- =========================
--- PRODUTO_CARRINHO
--- =========================
-INSERT INTO Produto_Carrinho (id_carrinho, id_produto, quantidade) VALUES
-  (1, 1, 2),  -- Carrinho 1 tem 2x Sumo
-  (1, 2, 1),  -- Carrinho 1 tem 1x Bolachas
-  (2, 2, 3);  -- Carrinho 2 tem 3x Bolachas
-
--- =========================
--- TIPO_NOTICIA
--- =========================
-INSERT INTO Tipo_Noticia (id_tipo_noticia, nome) VALUES
-  (1, 'Promoção'),
-  (2, 'Lançamento');
-
-SELECT setval('tipo_noticia_id_tipo_noticia_seq', 2, true);
-
--- =========================
--- NOTICIA
--- =========================
-INSERT INTO Noticia (id_noticia, titulo, conteudo, id_tipo_noticia, autor, data_publicacao) VALUES
-  (1, 'Campanha de Verão', 'Descontos até 30% em bebidas selecionadas durante o mês.', 1, 1, DATE '2025-06-01'),
-  (2, 'Novo Produto: Bolachas de Aveia', 'Chegaram as novas bolachas de aveia integral!', 2, 2, DATE '2025-06-15');
-
-SELECT setval('noticia_id_noticia_seq', 2, true);
-
--- =========================
--- IMAGEM_NOTICIA
--- =========================
-INSERT INTO Imagem_Noticia (id_imagem, id_noticia, uri) VALUES
-  (1, 1, '/imgs/noticias/1a.jpg'),
-  (2, 1, '/imgs/noticias/1b.jpg'),
-  (3, 2, '/imgs/noticias/2a.jpg');
-
-SELECT setval('imagem_noticia_id_imagem_seq', 3, true);
-
--- =========================
--- PRODUTO_NOTICIA
--- =========================
+-- PRODUTO EM DESTAQUE NA NOTÍCIA
 INSERT INTO Produto_Noticia (id_noticia, id_produto) VALUES
-  (1, 1),  -- Campanha de Verão destaca Sumo
-  (2, 2);  -- Lançamento destaca Bolachas
+    (1, 1);
 
-COMMIT;
+-- ENCOMENDA EXEMPLO (CLIENTE TESTE)
+INSERT INTO Encomenda (data_encomenda, id_utilizador, estado_encomenda) VALUES
+    (CURRENT_DATE, 3, 'Pendente');
+
+-- LINHAS DA ENCOMENDA (cliente comprou 2 unidades do Queijo da Serra)
+INSERT INTO Encomendas_Produtos (id_encomenda, id_produto, quantidade) VALUES
+    (1, 1, 2);
+
+
+-- Tipo de Utilizador Fornecedor (se ainda não existir)
+INSERT INTO Tipo_Utilizador (designacao)
+VALUES ('Fornecedor');
+
+-- Utilizador que representa um fornecedor
+-- Substitui <HASH_FORNECEDOR> por uma hash gerada com make_password("fornecedor123"), por ex.
+INSERT INTO Utilizador (nome, email, password, morada, nif, id_tipo_utilizador)
+VALUES (
+    'Fornecedor Queijaria',
+    'fornecedor@queijariadaserra.pt',
+    '<HASH_FORNECEDOR>',
+    'Parque Industrial, Armazém 4, Gouveia',
+    '555555555',
+    (SELECT id_tipo_utilizador FROM Tipo_Utilizador WHERE designacao = 'Fornecedor')
+);
+
+-- Fornecedor com o MESMO email (para conseguirmos associar)
+INSERT INTO Fornecedor (nome, contacto, email, nif, isSingular, morada, imagem_fornecedor)
+VALUES (
+    'Queijaria da Serra',
+    '+351912345678',
+    'fornecedor@queijariadaserra.pt',
+    '444444444',
+    FALSE,
+    'Parque Industrial, Armazém 4, Gouveia',
+    '/imagens/fornecedores/queijaria_serra.png'
+);

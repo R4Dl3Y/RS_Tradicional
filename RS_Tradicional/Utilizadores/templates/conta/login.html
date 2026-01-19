@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2 class="auth-title">Login</h2>
+
+<form method="post" class="auth-form">
+    {% csrf_token %}
+
+    <div class="auth-field">
+        <label for="id_email">Email</label>
+        <input type="email" name="email" id="id_email" required>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Entrar</button>
+
+    <p class="auth-link">
+        Ainda não tens conta?
+        <a href="{% url 'register' %}">Regista-te aqui</a>.
+    </p>
+</form>
+
+{% endblock %}

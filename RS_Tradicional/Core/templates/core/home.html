@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Início - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="home-hero" id="hero">
+    <span class="badge">Bem-vindo</span>
+    <h2 class="home-hero-title">Sabores tradicionais, qualidade garantida.</h2>
+    <p class="home-hero-subtitle">
+        Bem-vindo à RS Tradicional! Aqui encontra produtos selecionados, feitos com cuidado
+        e inspirados nas receitas de sempre. Explore o nosso catálogo, faça a sua encomenda
+        e acompanhe todas as novidades.
+    </p>
+
+    <div class="home-hero-actions">
+        <!-- texto atualizado -->
+        <a href="{% url 'loja_produtos' %}" class="btn btn-primary">Ir para a loja</a>
+        <a href="{% url 'minhas_encomendas' %}" class="btn">Fazer encomenda</a>
+    </div>
+</section>
+
+<section>
+    <h3 class="section-title">Destaques</h3>
+    <p class="section-subtitle">
+        Comece por aqui — as áreas mais importantes da RS Tradicional.
+    </p>
+
+    <div class="home-grid">
+        <article class="home-card">
+            <h4 class="home-card-title">Produtos</h4>
+            <p class="home-card-text">
+                Consulte a lista de produtos disponíveis, detalhes, preços e stock.
+            </p>
+            <a class="home-card-link btn btn-primary" href="{% url 'loja_produtos' %}">Ir para a loja</a>
+        </article>
+
+        <article class="home-card">
+            <h4 class="home-card-title">Encomendas</h4>
+            <p class="home-card-text">
+                Faça novas encomendas ou acompanhe o estado das que já realizou.
+            </p>
+            <!-- agora com o mesmo estilo do primeiro card -->
+            <a class="home-card-link btn btn-primary" href="{% url 'minhas_encomendas' %}">Gerir Encomendas</a>
+        </article>
+
+        <article class="home-card">
+            <h4 class="home-card-title">Notícias</h4>
+            <p class="home-card-text">
+                Fique a par de campanhas, novidades e informações importantes.
+            </p>
+            <!-- mesmo estilo -->
+            <a class="home-card-link btn btn-primary" href="{% url 'noticias_lista' %}">Ver Notícias</a>
+        </article>
+
+        <article class="home-card">
+            <h4 class="home-card-title">Área de Utilizador</h4>
+            <p class="home-card-text">
+                Aceda aos seus dados, histórico de compras e definições de conta.
+            </p>
+            <!-- mesmo estilo -->
+            <a class="home-card-link btn btn-primary" href="#">Entrar</a>
+        </article>
+    </div>
+</section>
+
+{% endblock %}

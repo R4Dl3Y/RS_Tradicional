@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Submeter Produto - Área do Fornecedor{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Fornecedor · Produtos</span>
+            <h2 class="admin-title">Submeter novo produto</h2>
+            <p class="admin-subtitle">
+                Estás a submeter um produto em nome de
+                <strong>{{ fornecedor.nome }}</strong>. O produto ficará com estado
+                <em>Pendente</em> até ser aprovado por um administrador ou gestor.
+            </p>
+        </div>
+    </section>
+
+    <section class="admin-form-section">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+
+            <div class="admin-form-grid">
+                <div class="admin-field">
+                    <label for="id_nome">Nome *</label>
+                    <input type="text" id="id_nome" name="nome"
+                           value="{{ request.POST.nome }}" required>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_preco">Preço (€) *</label>
+                    <input type="text" id="id_preco" name="preco"
+                           value="{{ request.POST.preco }}">
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_stock">Stock *</label>
+                    <input type="number" id="id_stock" name="stock"
+                           value="{{ request.POST.stock }}" min="0">
+                </div>
+
+                <div class="admin-field admin-field-full">
+                    <label for="id_descricao">Descrição</label>
+                    <textarea id="id_descricao" name="descricao" rows="3">{{ request.POST.descricao }}</textarea>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_tipo_produto">Tipo de Produto</label>
+                    <select id="id_tipo_produto" name="tipo_produto">
+                        <option value="">— Seleciona —</option>
+                        {% for t in tipos %}
+                            <option value="{{ t.id_tipo_produto }}"
+                                {% if request.POST.tipo_produto == t.id_tipo_produto|stringformat:"s" %}selected{% endif %}>
+                                {{ t.designacao }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{% url 'home' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Submeter para aprovação</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

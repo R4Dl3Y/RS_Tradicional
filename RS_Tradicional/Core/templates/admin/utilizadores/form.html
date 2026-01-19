@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ acao }} Utilizador - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Utilizadores</span>
+            <h2 class="admin-title">{{ acao }} Utilizador</h2>
+            <p class="admin-subtitle">
+                Preenche os dados do utilizador. Os campos assinalados com * são obrigatórios.
+                A password só é alterada se definires um novo valor.
+            </p>
+        </div>
+    </section>
+
+    <section class="admin-form-section">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+
+            <div class="admin-form-grid">
+                <div class="admin-field">
+                    <label for="id_nome">Nome *</label>
+                    <input type="text" id="id_nome" name="nome"
+                           value="{{ utilizador.nome|default_if_none:'' }}" required>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_email">Email *</label>
+                    <input type="email" id="id_email" name="email"
+                           value="{{ utilizador.email|default_if_none:'' }}" required>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_nif">NIF *</label>
+                    <input type="text" id="id_nif" name="nif" maxlength="9"
+                           value="{{ utilizador.nif|default_if_none:'' }}" required>
+                </div>
+
+                <div class="admin-field admin-field-full">
+                    <label for="id_morada">Morada</label>
+                    <textarea id="id_morada" name="morada" rows="3">{{ utilizador.morada|default_if_none:'' }}</textarea>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_tipo_utilizador">Tipo de Utilizador</label>
+                    <select id="id_tipo_utilizador" name="tipo_utilizador">
+                        <option value="">— Nenhum —</option>
+                        {% for t in tipos %}
+                            <option value="{{ t.id_tipo_utilizador }}"
+                                {% if utilizador.id_tipo_utilizador.id_tipo_utilizador == t.id_tipo_utilizador %}selected{% endif %}>
+                                {{ t.designacao }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_password">Password {% if acao == "Criar" %}*{% endif %}</label>
+                    <input type="password" id="id_password" name="password"
+                           {% if acao == "Criar" %}required{% endif %}>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_password2">Confirmar Password {% if acao == "Criar" %}*{% endif %}</label>
+                    <input type="password" id="id_password2" name="password2"
+                           {% if acao == "Criar" %}required{% endif %}>
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_user_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary">{{ acao }}</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

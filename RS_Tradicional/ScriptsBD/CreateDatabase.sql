@@ -1,10 +1,9 @@
+DROP TABLE IF EXISTS Encomendas_Produtos CASCADE;
+DROP TABLE IF EXISTS Encomenda CASCADE;
 DROP TABLE IF EXISTS Imagem_Noticia CASCADE;
 DROP TABLE IF EXISTS Produto_Noticia CASCADE;
 DROP TABLE IF EXISTS Noticia CASCADE;
 DROP TABLE IF EXISTS Tipo_Noticia CASCADE;
-DROP TABLE IF EXISTS Produto_Carrinho CASCADE;
-DROP TABLE IF EXISTS Carrinho CASCADE;
-DROP TABLE IF EXISTS Estado_Carrinho CASCADE;
 DROP TABLE IF EXISTS Imagem_Produto CASCADE;
 DROP TABLE IF EXISTS Produto CASCADE;
 DROP TABLE IF EXISTS Tipo_Produto CASCADE;
@@ -24,7 +23,6 @@ CREATE TABLE Utilizador(
     password VARCHAR(255) NOT NULL,
     morada TEXT,
     nif CHAR(9) NOT NULL CHECK (nif ~ '^[0-9]{9}$'),
-    imagem_perfil TEXT,
     id_tipo_utilizador INT NULL,
     CONSTRAINT FK_tipo_utilizador FOREIGN KEY (id_tipo_utilizador) REFERENCES Tipo_Utilizador(id_tipo_utilizador) ON DELETE SET NULL
 );
@@ -54,6 +52,8 @@ CREATE TABLE Produto
     descricao TEXT,
     preco DECIMAL NOT NULL CHECK (preco >= 0),
     stock INT NOT NULL CHECK (stock >= 0),
+    is_approved BOOLEAN DEFAULT FALSE,
+    estado_produto VARCHAR(64) NOT NULL,
     id_tipo_produto INT NULL,
     id_fornecedor INT NULL,
     CONSTRAINT FK_fornecedor FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id_fornecedor) ON DELETE SET NULL,
@@ -67,29 +67,6 @@ CREATE TABLE Imagem_Produto
     id_produto  INT NOT NULL,
     caminho     TEXT NOT NULL,
     CONSTRAINT FK_id_produto FOREIGN KEY (id_produto) REFERENCES Produto(id_produto) ON DELETE CASCADE
-);
-
-CREATE TABLE Estado_Carrinho
-(
-    id_estado SERIAL PRIMARY KEY,
-    descricao VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE Carrinho
-(
-    id_carrinho SERIAL PRIMARY KEY,
-    id_utilizador INT NOT NULL,
-    estado INT NULL,
-    CONSTRAINT FK_id_utilizador FOREIGN KEY (id_utilizador) REFERENCES Utilizador(id_utilizador) ON DELETE CASCADE,
-    CONSTRAINT FK_estado FOREIGN KEY (estado) REFERENCES Estado_Carrinho(id_estado) ON DELETE SET NULL
-);
-
-CREATE TABLE Produto_Carrinho
-(
-    id_carrinho  INT NOT NULL REFERENCES Carrinho(id_carrinho) ON DELETE CASCADE,
-    id_produto  INT NOT NULL REFERENCES Produto(id_produto) ON DELETE CASCADE,
-    quantidade INT DEFAULT 1,
-    PRIMARY KEY (id_carrinho, id_produto)
 );
 
 CREATE TABLE Tipo_Noticia
@@ -126,26 +103,21 @@ CREATE TABLE Produto_Noticia
     PRIMARY KEY (id_noticia, id_produto)
 );
 
-
-/*
-    vão ser criadas em MONGO
-
-CREATE TABLE IF NOT EXISTS public."Encomenda"
+CREATE TABLE Encomenda
 (
-    id_encomenda integer NOT NULL,
-    data date NOT NULL,
-    id_utilizador integer NOT NULL,
-    id_estado integer NOT NULL,
-    CONSTRAINT "Encomenda_pkey" PRIMARY KEY (id_encomenda)
+    id_encomenda SERIAL PRIMARY KEY,
+    data_encomenda DATE NOT NULL,
+    id_utilizador INT NOT NULL,
+    estado_encomenda VARCHAR(64) NOT NULL,
+    CONSTRAINT FK_id_utilizador FOREIGN KEY (id_utilizador) REFERENCES Utilizador(id_utilizador) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS public."Encomendas_Produtos"
+CREATE TABLE Encomendas_Produtos
 (
-    id_encomenda integer NOT NULL,
-    id_produto integer NOT NULL,
-    quantidade integer,
-    CONSTRAINT id_encomenda PRIMARY KEY (id_encomenda, id_produto)
+    id SERIAL PRIMARY KEY,
+    id_encomenda INT NOT NULL REFERENCES Encomenda(id_encomenda) ON DELETE CASCADE,
+    id_produto   INT NOT NULL REFERENCES Produto(id_produto)     ON DELETE CASCADE,
+    quantidade   INT DEFAULT 1,
+    UNIQUE (id_encomenda, id_produto)
 );
 
-Faturação também
-*/

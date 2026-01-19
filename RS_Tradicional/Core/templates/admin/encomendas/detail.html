@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Detalhe da Encomenda #{{ encomenda.id_encomenda }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+
+    <!-- Cabeçalho / resumo da encomenda -->
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Encomendas</span>
+            <h2 class="admin-title">Encomenda #{{ encomenda.id_encomenda }}</h2>
+            <p class="admin-subtitle">
+                <strong>Data:</strong> {{ encomenda.data_encomenda }} ·
+                <strong>Utilizador:</strong> {{ encomenda.id_utilizador.nome }} ({{ encomenda.id_utilizador.email }}) ·
+                <strong>Estado:</strong> {{ encomenda.estado_encomenda }}
+            </p>
+        </div>
+        <div class="admin-hero-user" style="gap: 0.5rem;">
+            <div class="admin-pill">
+                Total estimado:
+                <strong>{{ total_encomenda }} €</strong>
+            </div>
+            <a href="{% url 'admin_encomenda_list' %}" class="btn">Voltar à lista</a>
+            <a href="{% url 'admin_encomenda_edit' encomenda.id_encomenda %}" class="btn btn-primary">
+                Editar encomenda
+            </a>
+        </div>
+    </section>
+
+    <!-- Linhas da encomenda -->
+    <section>
+        <h3 class="admin-section-title">Linhas da Encomenda</h3>
+
+        {% if linhas %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço unit.</th>
+                        <th>Quantidade</th>
+                        <th style="width: 220px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in linhas %}
+                        <tr>
+                            <td>{{ linha.id_produto.nome }}</td>
+                            <td>{{ linha.id_produto.preco }} €</td>
+                            <td>{{ linha.quantidade }}</td>
+                            <td class="admin-table-actions">
+
+                                <!-- Atualizar quantidade -->
+                                <form method="post"
+                                      action="{% url 'admin_encomenda_update_item' encomenda.id_encomenda linha.id_produto.id_produto %}"
+                                      style="display:inline-flex; align-items:center; gap:0.25rem;">
+                                    {% csrf_token %}
+                                    <input type="number"
+                                           name="quantidade"
+                                           min="1"
+                                           value="{{ linha.quantidade }}"
+                                           style="width: 70px; padding: 0.2rem 0.4rem; border-radius: 0.4rem; border: 1px solid #e5b3c6;">
+                                    <button type="submit"
+                                            class="admin-table-link"
+                                            style="border:none;background:none;padding:0;cursor:pointer;">
+                                        Atualizar
+                                    </button>
+                                </form>
+
+                                <span>·</span>
+
+                                <!-- Remover linha -->
+                                <form method="post"
+                                      action="{% url 'admin_encomenda_delete_item' encomenda.id_encomenda linha.id_produto.id_produto %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="admin-table-link admin-table-link-danger"
+                                            style="border:none;background:none;padding:0;cursor:pointer;">
+                                        Remover
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Esta encomenda ainda não tem produtos associados.</p>
+        {% endif %}
+    </section>
+
+    <!-- Adicionar nova linha -->
+    <section style="margin-top: 2rem;">
+        <h3 class="admin-section-title">Adicionar produto à encomenda</h3>
+
+        <form method="post"
+              action="{% url 'admin_encomenda_add_item' encomenda.id_encomenda %}"
+              class="admin-form admin-form-inline">
+            {% csrf_token %}
+
+            <div class="admin-form-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; align-items: flex-end;">
+                <div class="admin-field">
+                    <label for="id_produto">Produto</label>
+                    <select id="id_produto" name="produto" required>
+                        <option value="">— Seleciona um produto —</option>
+                        {% for p in produtos %}
+                            <option value="{{ p.id_produto }}">
+                                {{ p.nome }} ({{ p.preco }} €)
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_quantidade">Quantidade</label>
+                    <input type="number"
+                           id="id_quantidade"
+                           name="quantidade"
+                           min="1"
+                           value="1">
+                </div>
+
+                <div class="admin-field">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.3rem;">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+</div>
+
+{% endblock %}

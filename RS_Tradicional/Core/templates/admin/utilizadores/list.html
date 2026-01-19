@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Utilizadores - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Utilizadores</span>
+            <h2 class="admin-title">Gestão de Utilizadores</h2>
+            <p class="admin-subtitle">
+                Consulta e gere as contas de utilizador: tipos de acesso, dados de contacto e NIF.
+            </p>
+        </div>
+        <div class="admin-hero-user">
+            <a href="{% url 'admin_user_create' %}" class="btn btn-primary">+ Novo utilizador</a>
+        </div>
+    </section>
+
+    <section>
+        {% if utilizadores %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>NIF</th>
+                        <th>Tipo</th>
+                        <th style="width: 160px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in utilizadores %}
+                        <tr>
+                            <td>{{ u.id_utilizador }}</td>
+                            <td>{{ u.nome }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.nif }}</td>
+                            <td>{{ u.id_tipo_utilizador.designacao|default:"—" }}</td>
+                            <td class="admin-table-actions">
+                                <a href="{% url 'admin_user_edit' u.id_utilizador %}" class="admin-table-link">Editar</a>
+                                <span>·</span>
+                                <a href="{% url 'admin_user_delete' u.id_utilizador %}"
+                                   class="admin-table-link admin-table-link-danger">
+                                    Remover
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não existem utilizadores registados.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}
