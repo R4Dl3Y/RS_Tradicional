@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ noticia.titulo }} - Notícias{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="news-page">
+    <article class="news-detail-card">
+        <header class="news-detail-header">
+            <span class="badge">Notícia</span>
+            <h2 class="news-detail-title">{{ noticia.titulo }}</h2>
+
+            <p class="news-card-meta">
+                {% if noticia.id_tipo_noticia %}
+                    <span class="news-tag">{{ noticia.id_tipo_noticia.nome }}</span>
+                {% endif %}
+                <span>
+                    {{ noticia.data_publicacao }}
+                    {% if noticia.autor %}
+                        · por {{ noticia.autor.nome }}
+                    {% endif %}
+                </span>
+            </p>
+        </header>
+
+        <section class="news-detail-body">
+            <p>{{ noticia.conteudo }}</p>
+        </section>
+
+        <footer class="news-detail-footer">
+            <a href="{% url 'noticias_lista' %}" class="btn">Voltar às notícias</a>
+        </footer>
+    </article>
+</div>
+
+{% endblock %}

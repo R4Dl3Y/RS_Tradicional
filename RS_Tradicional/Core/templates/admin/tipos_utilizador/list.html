@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tipos de Utilizador - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Tipos de Utilizador</span>
+            <h2 class="admin-title">Tipos de Utilizador</h2>
+            <p class="admin-subtitle">
+                Gere perfis como <em>admin</em>, <em>cliente</em> e outros níveis de acesso.
+                Estes tipos podem ser associados aos utilizadores na área de gestão de contas.
+            </p>
+        </div>
+        <div class="admin-hero-user">
+            <a href="{% url 'admin_tipo_utilizador_create' %}" class="btn btn-primary">+ Novo tipo</a>
+        </div>
+    </section>
+
+    <section>
+        {% if tipos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Designação</th>
+                        <th style="width: 160px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tipos %}
+                        <tr>
+                            <td>{{ t.id_tipo_utilizador }}</td>
+                            <td>{{ t.designacao }}</td>
+                            <td class="admin-table-actions">
+                                <a href="{% url 'admin_tipo_utilizador_edit' t.id_tipo_utilizador %}"
+                                   class="admin-table-link">Editar</a>
+                                <span>·</span>
+                                <a href="{% url 'admin_tipo_utilizador_delete' t.id_tipo_utilizador %}"
+                                   class="admin-table-link admin-table-link-danger">
+                                    Remover
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não existem tipos de utilizador definidos.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

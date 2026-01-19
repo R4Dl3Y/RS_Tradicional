@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notícias - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="news-page">
+    <section class="news-hero">
+        <span class="badge">Notícias</span>
+        <h2 class="news-title">Novidades e destaques</h2>
+        <p class="news-subtitle">
+            Fica a par de campanhas, lançamentos de produtos, eventos e outras
+            novidades da RS Tradicional.
+        </p>
+    </section>
+
+    <section>
+        {% if noticias %}
+            <div class="news-grid">
+                {% for n in noticias %}
+                    <article class="news-card">
+                        <div class="news-card-header">
+                            <h3 class="news-card-title">{{ n.titulo }}</h3>
+                            <p class="news-card-meta">
+                                {% if n.id_tipo_noticia %}
+                                    <span class="news-tag">{{ n.id_tipo_noticia.nome }}</span>
+                                {% endif %}
+                                <span>
+                                    {{ n.data_publicacao }}
+                                    {% if n.autor %}
+                                        · por {{ n.autor.nome }}
+                                    {% endif %}
+                                </span>
+                            </p>
+                        </div>
+
+                        <p class="news-card-text">
+                            {% if n.conteudo|length > 160 %}
+                                {{ n.conteudo|slice:":160" }}...
+                            {% else %}
+                                {{ n.conteudo }}
+                            {% endif %}
+                        </p>
+
+                        <div class="news-card-footer">
+                            <a href="{% url 'noticia_detalhe' n.id_noticia %}" class="btn btn-primary">
+                                Ler mais
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>De momento não existem notícias publicadas.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

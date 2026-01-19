@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ acao }} Tipo de Utilizador - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Tipos de Utilizador</span>
+            <h2 class="admin-title">{{ acao }} Tipo de Utilizador</h2>
+            <p class="admin-subtitle">
+                Define um nome claro para o tipo de utilizador (por exemplo, "admin", "cliente", "gestor").
+            </p>
+        </div>
+    </section>
+
+    <section class="admin-form-section">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+
+            <div class="admin-form-grid">
+                <div class="admin-field admin-field-full">
+                    <label for="id_designacao">Designação *</label>
+                    <input type="text"
+                           id="id_designacao"
+                           name="designacao"
+                           value="{{ tipo.designacao|default_if_none:'' }}"
+                           required>
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_tipo_utilizador_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary">{{ acao }}</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

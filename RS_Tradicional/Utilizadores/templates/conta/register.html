@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Registo - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2 class="auth-title">Criar conta</h2>
+
+<form method="post" class="auth-form">
+    {% csrf_token %}
+
+    <div class="auth-field">
+        <label for="id_nome">Nome</label>
+        <input type="text" name="nome" id="id_nome" required>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_email">Email</label>
+        <input type="email" name="email" id="id_email" required>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_nif">NIF</label>
+        <input type="text" name="nif" id="id_nif" maxlength="9" required>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_morada">Morada</label>
+        <textarea name="morada" id="id_morada" rows="3"></textarea>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" required>
+    </div>
+
+    <div class="auth-field">
+        <label for="id_password2">Confirmar Password</label>
+        <input type="password" name="password2" id="id_password2" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registar</button>
+
+    <p class="auth-link">
+        Já tens conta?
+        <a href="{% url 'login' %}">Faz login aqui</a>.
+    </p>
+</form>
+
+{% endblock %}

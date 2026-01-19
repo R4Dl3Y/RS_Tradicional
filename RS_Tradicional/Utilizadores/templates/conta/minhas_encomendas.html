@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}As minhas encomendas{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Área de Utilizador</span>
+            <h2 class="admin-title">As minhas encomendas</h2>
+            <p class="admin-subtitle">
+                Olá, {{ user.nome }}. Aqui podes consultar o histórico das tuas encomendas,
+                o estado atual e o valor total de cada uma.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        {% if encomendas_info %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th style="width: 120px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in encomendas_info %}
+                        <tr>
+                            <td>{{ item.encomenda.id_encomenda }}</td>
+                            <td>{{ item.encomenda.data_encomenda }}</td>
+                            <td>{{ item.encomenda.estado_encomenda }}</td>
+                            <td>{{ item.total }} €</td>
+                            <td class="admin-table-actions">
+                                <a href="{% url 'minha_encomenda_detail' item.encomenda.id_encomenda %}"
+                                   class="admin-table-link">
+                                    Ver detalhe
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Ainda não tens encomendas registadas.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

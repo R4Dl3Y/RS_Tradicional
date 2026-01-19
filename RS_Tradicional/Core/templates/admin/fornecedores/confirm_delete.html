@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Remover Fornecedor - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Fornecedores</span>
+            <h2 class="admin-title">Remover Fornecedor</h2>
+            <p class="admin-subtitle">
+                Tens a certeza que queres remover o fornecedor
+                <strong>{{ fornecedor.nome }}</strong> (ID {{ fornecedor.id_fornecedor }})?
+                Esta ação não pode ser desfeita.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <form method="post" class="admin-delete-form">
+            {% csrf_token %}
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_fornecedor_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary admin-btn-danger">Remover</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

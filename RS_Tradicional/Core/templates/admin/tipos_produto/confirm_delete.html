@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Remover Tipo de Produto - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Tipos de Produto</span>
+            <h2 class="admin-title">Remover Tipo de Produto</h2>
+            <p class="admin-subtitle">
+                Tens a certeza que queres remover o tipo de produto
+                <strong>{{ tipo.designacao }}</strong> (ID {{ tipo.id_tipo_produto }})?
+                Todos os produtos que utilizem este tipo ficarão sem categoria
+                (a referência será definida como <em>NULL</em>).
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <form method="post" class="admin-delete-form">
+            {% csrf_token %}
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_tipo_produto_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary admin-btn-danger">Remover</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}
