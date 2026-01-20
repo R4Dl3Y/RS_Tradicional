@@ -1,5 +1,3 @@
--- 02_functions_views.sql
--- Funções de apoio e Views de listagem
 
 -- =========================
 -- DROPS

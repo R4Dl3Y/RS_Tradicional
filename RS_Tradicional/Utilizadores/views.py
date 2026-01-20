@@ -106,7 +106,7 @@ def login_view(request):
                 request.session["user_nome"] = nome
                 request.session["user_email"] = email_db
 
-                # Guardar tipo sempre consistente em lowercase
+                # Guardar tipo sempre consistente em lowercase (resolvido)
                 request.session["user_tipo"] = (tipo_designacao or "").lower() or None
 
                 messages.success(request, f"Bem-vindo, {nome}!")

@@ -1,4 +1,3 @@
--- 01_roles.sql
 -- =========================================
 -- ROLES e permissões base
 -- =========================================
@@ -27,9 +26,7 @@ CREATE ROLE rs_gestor     NOLOGIN INHERIT IN ROLE rs_base;
 CREATE ROLE rs_admin      NOLOGIN INHERIT IN ROLE rs_base;
 
 -- -----------------------------------------
--- Roles de login (EXEMPLO – muda as passwords!)
--- Podes usar estes users só para demonstração no pgAdmin
--- Não precisam de ser os users do settings.py do Django.
+-- Roles de login (EXEMPLO – mudar as passwords!)
 -- -----------------------------------------
 CREATE ROLE rs_admin_user LOGIN PASSWORD 'MudaEstaPasswordAdmin';
 GRANT rs_admin TO rs_admin_user;
@@ -69,7 +66,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
     encomendas_produtos
 TO rs_admin;
 
--- Gestor: quase tudo (sem deletes em utilizador/tipo_utilizador se quiseres ser mais rígido)
+-- Gestor:
 GRANT SELECT, INSERT, UPDATE ON
     tipo_utilizador,
     utilizador,
@@ -82,14 +79,14 @@ GRANT SELECT, INSERT, UPDATE ON
     encomendas_produtos
 TO rs_gestor;
 
--- Fornecedor: leitura de tipos e produtos (opera via procedures)
+-- Fornecedor:
 GRANT SELECT ON
     tipo_produto,
     produto,
     fornecedor
 TO rs_fornecedor;
 
--- Cliente: leitura de produtos/notícias (opera via procedures)
+-- Cliente:
 GRANT SELECT ON
     tipo_produto,
     produto,
@@ -97,8 +94,6 @@ GRANT SELECT ON
     noticia
 TO rs_cliente;
 
--- Se quiseres simplificar e garantir que também apanhas as views:
--- (opcional, se já tiveres as GRANTs específicos em cima)
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO rs_admin;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO rs_gestor;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO rs_fornecedor;

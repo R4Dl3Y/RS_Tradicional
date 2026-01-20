@@ -1,4 +1,3 @@
-# Core/views.py
 from decimal import Decimal, InvalidOperation
 from datetime import datetime, date
 
@@ -98,7 +97,7 @@ def admin_relatorios(request):
 
 
 # ======================================================
-#  HELPERS GENÉRICOS PARA SQL
+#  HELPERS PARA SQL
 # ======================================================
 
 def _fetchall_dicts(sql, params=None):
@@ -134,7 +133,7 @@ def _user_friendly_db_error(err: str) -> str:
     cleaned = err.split("CONTEXT:")[0].strip()
     cleaned = cleaned.replace("\n", " ").strip()
 
-    # mapear mensagens conhecidas para UI
+    # mapear mensagens conhecidas para UI (oculta erros técnicos)
     msg = cleaned.lower()
 
     if "apenas clientes podem usar o carrinho" in msg:

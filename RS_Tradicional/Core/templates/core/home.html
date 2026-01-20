@@ -19,7 +19,6 @@
     </p>
 
     <div class="home-hero-actions">
-        <!-- texto atualizado -->
         <a href="{% url 'loja_produtos' %}" class="btn btn-primary">Ir para a loja</a>
         <a href="{% url 'loja_carrinho' %}" class="btn">Fazer encomenda</a>
     </div>
@@ -45,7 +44,6 @@
             <p class="home-card-text">
                 Faça novas encomendas ou acompanhe o estado das que já realizou.
             </p>
-            <!-- agora com o mesmo estilo do primeiro card -->
             <a class="home-card-link btn btn-primary" href="{% url 'minhas_encomendas' %}">Gerir Encomendas</a>
         </article>
 
@@ -54,7 +52,6 @@
             <p class="home-card-text">
                 Fique a par de campanhas, novidades e informações importantes.
             </p>
-            <!-- mesmo estilo -->
             <a class="home-card-link btn btn-primary" href="{% url 'noticias_lista' %}">Ver Notícias</a>
         </article>
 
@@ -63,7 +60,6 @@
             <p class="home-card-text">
                 Aceda aos seus dados, histórico de compras e definições de conta.
             </p>
-            <!-- mesmo estilo -->
             {% if request.session.user_id %}
             <a class="home-card-link btn btn-primary" href="{% url 'area_utilizador' %}">Entrar</a>
         {% else %}

@@ -22,10 +22,13 @@
                         <li><a class="navbar-link" href="{% url 'noticias_lista' %}">Notícias</a></li>
                         <li><a class="navbar-link" href="{% url 'area_utilizador' %}">Área de Utilizador</a></li>
 
-                        {# Tab Admin só aparece para utilizadores com tipo 'admin' #}
-                        {% if request.session.user_tipo and request.session.user_tipo|lower == 'admin' %}
-                            <li><a class="navbar-link" href="{% url 'admin_dashboard' %}">Admin</a></li>
+                        {# Tab Admin só aparece para utilizadores com tipo 'admin' ou 'gestor' #}
+                        {% if request.session.user_tipo %}
+                            {% if request.session.user_tipo|lower == 'admin' or request.session.user_tipo|lower == 'gestor' %}
+                                <li><a class="navbar-link" href="{% url 'admin_dashboard' %}">Admin</a></li>
+                            {% endif %}
                         {% endif %}
+
                     </ul>
                 </nav>
             </div>

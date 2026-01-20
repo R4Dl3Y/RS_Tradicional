@@ -1,3 +1,5 @@
+-- DEPRECATED ==================================================================================
+
 --Views Simples Utilizadores
 
 CREATE VIEW vw_listarUtilizadores AS

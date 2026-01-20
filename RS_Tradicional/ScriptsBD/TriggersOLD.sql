@@ -1,3 +1,5 @@
+-- DEPRECATED ==================================================================================
+
 DROP FUNCTION IF EXISTS trg_normaliza_email_utilizador() CASCADE;
 DROP TRIGGER IF EXISTS normaliza_email_utilizador ON Utilizador;
 
