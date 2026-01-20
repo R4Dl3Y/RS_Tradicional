@@ -1,3 +1,5 @@
+-- DEPECRATED ===================================
+
 DROP FUNCTION IF EXISTS export_utilizadores() CASCADE;
 
 CREATE OR REPLACE FUNCTION export_utilizadores()

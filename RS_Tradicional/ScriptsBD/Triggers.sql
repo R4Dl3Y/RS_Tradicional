@@ -1,5 +1,3 @@
--- 04_triggers.sql
--- Triggers: stock em encomendas + criação automática de utilizador para fornecedor
 
 -- =========================
 -- TRIGGER: stock ao alterar estado da encomenda
@@ -82,7 +80,7 @@ BEGIN
     WHERE lower(designacao) = 'fornecedor'
     LIMIT 1;
 
-    -- se não existir, não falha; apenas não cria
+    -- se não existir, apenas não cria
     IF v_id_tipo_fornecedor IS NULL THEN
         RETURN NEW;
     END IF;

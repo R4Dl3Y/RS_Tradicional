@@ -87,7 +87,6 @@ CREATE TABLE Noticia
     CONSTRAINT FK_autor FOREIGN KEY (autor) REFERENCES Utilizador(id_utilizador) ON DELETE SET NULL
 );
 
-/*IMAGENS (1:N com notícia)*/
 CREATE TABLE Imagem_Noticia 
 (
     id_imagem     SERIAL PRIMARY KEY,

@@ -1,10 +1,4 @@
--- 03_procedures.sql
--- Procedures principais de negócio (VERSÃO FIXED - com verificação de session/user_id via p_id_exec)
-
--- NOTA IMPORTANTE:
--- 1) Todas as operações "admin/gestor" agora exigem p_id_exec (id do utilizador logado).
--- 2) Isto implica ajustares as chamadas no Django para passar request.session["user_id"].
--- 3) Mantive nomes consistentes e criei ALIAS (wrappers) quando tinhas mismatch no Django (ex: aprovar/rejeitar produto).
+-- p_id_exec -> gestão da sessão do utilizador que executa a procedure
 
 -- ============================================================
 -- UTILIZADORES
@@ -73,7 +67,7 @@ $$;
 
 
 -- ============================================================
--- UTILIZADORES (ADMIN) - AGORA COM p_id_exec (ADMIN ONLY)
+-- UTILIZADORES (ADMIN) - COM p_id_exec (ADMIN ONLY)
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_admin_utilizador_criar(INT, TEXT, TEXT, TEXT, TEXT, TEXT, INTEGER);
@@ -243,7 +237,7 @@ $$;
 
 
 -- ============================================================
--- TIPO_UTILIZADOR (ADMIN) - JÁ TINHA p_id_exec (mantido)
+-- TIPO_UTILIZADOR (ADMIN) - COM p_id_exec
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_tipo_utilizador_criar(INT, TEXT);
@@ -346,7 +340,7 @@ $$;
 
 
 -- ============================================================
--- TIPO_PRODUTO (ADMIN/GESTOR) - AGORA COM p_id_exec
+-- TIPO_PRODUTO (ADMIN/GESTOR) - COM p_id_exec
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_admin_tipo_produto_criar(INT, TEXT);
@@ -453,8 +447,7 @@ $$;
 
 
 -- ============================================================
--- FORNECEDOR (ADMIN/GESTOR) - JÁ TINHA p_id_exec (mantido)
--- + ALIAS "sp_admin_fornecedor_*" para bater com Django (se usares esses nomes)
+-- FORNECEDOR (ADMIN/GESTOR) - COM p_id_exec 
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_fornecedor_criar(INT, TEXT, TEXT, TEXT, TEXT, BOOLEAN, TEXT, TEXT);
@@ -623,7 +616,7 @@ BEGIN
 END;
 $$;
 
--- ALIAS para bater com nomes "sp_admin_fornecedor_*"
+
 DROP PROCEDURE IF EXISTS sp_admin_fornecedor_criar(INT, TEXT, TEXT, TEXT, TEXT, BOOLEAN, TEXT, TEXT);
 CREATE OR REPLACE PROCEDURE sp_admin_fornecedor_criar(
     p_id_exec           INT,
@@ -675,7 +668,7 @@ $$;
 
 
 -- ============================================================
--- PRODUTO (ADMIN/GESTOR) - AGORA COM p_id_exec
+-- PRODUTO (ADMIN/GESTOR) - COM p_id_exec
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_admin_produto_criar(INT, TEXT, TEXT, NUMERIC, INT, TEXT, BOOLEAN, INT, INT);
@@ -837,7 +830,7 @@ END;
 $$;
 
 
--- Fornecedor submete produto (PENDENTE) - já usa p_id_exec e valida "fornecedor"
+-- Fornecedor submete produto (PENDENTE) - usa p_id_exec e valida "fornecedor"
 DROP PROCEDURE IF EXISTS sp_fornecedor_submeter_produto(INT, TEXT, TEXT, NUMERIC, INT, INT);
 
 CREATE OR REPLACE PROCEDURE sp_fornecedor_submeter_produto(
@@ -911,7 +904,7 @@ END;
 $$;
 
 
--- Aprovar / Rejeitar produto (admin/gestor) - já tinha p_id_exec (mantido)
+-- Aprovar / Rejeitar produto (admin/gestor) - com p_id_exec
 DROP PROCEDURE IF EXISTS sp_admin_produto_aprovar(INT, INT);
 
 CREATE OR REPLACE PROCEDURE sp_admin_produto_aprovar(
@@ -975,7 +968,7 @@ BEGIN
 END;
 $$;
 
--- ALIAS para bater com nomes que tinhas no Django (sp_admin_aprovar_produto / sp_admin_rejeitar_produto)
+
 DROP PROCEDURE IF EXISTS sp_admin_aprovar_produto(INT, INT);
 CREATE OR REPLACE PROCEDURE sp_admin_aprovar_produto(p_id_exec INT, p_id_produto INT)
 LANGUAGE plpgsql
@@ -1146,7 +1139,7 @@ END;
 $$;
 
 
--- Admin: CRUD Encomenda (já tinha p_id_exec - mantido)
+-- Admin: CRUD Encomenda (COM p_id_exec)
 DROP PROCEDURE IF EXISTS sp_admin_encomenda_criar(INT, DATE, INT, TEXT);
 
 CREATE OR REPLACE PROCEDURE sp_admin_encomenda_criar(
@@ -1260,7 +1253,7 @@ END;
 $$;
 
 
--- Admin: gerir linhas da encomenda (já tinha p_id_exec - mantido)
+-- Admin: gerir linhas da encomenda (COM p_id_exec)
 DROP PROCEDURE IF EXISTS sp_admin_encomenda_adicionar_item(INT, INT, INT, INT);
 
 CREATE OR REPLACE PROCEDURE sp_admin_encomenda_adicionar_item(
@@ -1360,7 +1353,7 @@ BEGIN
 END;
 $$;
 
--- ALIAS para bater com nomes que tinhas no Django (adicionar_linha / atualizar_linha / remover_linha)
+
 DROP PROCEDURE IF EXISTS sp_admin_encomenda_adicionar_linha(INT, INT, INT, INT);
 CREATE OR REPLACE PROCEDURE sp_admin_encomenda_adicionar_linha(p_id_exec INT, p_id_encomenda INT, p_id_produto INT, p_quantidade INT)
 LANGUAGE plpgsql
@@ -1390,7 +1383,7 @@ $$;
 
 
 -- ============================================================
--- NOTÍCIAS (ADMIN/GESTOR) - JÁ TINHA p_id_exec (mantido)
+-- NOTÍCIAS (ADMIN/GESTOR) - COM p_id_exec
 -- ============================================================
 
 DROP PROCEDURE IF EXISTS sp_admin_noticia_criar(INT, TEXT, TEXT, DATE, INT, INT);
@@ -1563,7 +1556,7 @@ BEGIN
         RAISE EXCEPTION 'Não tens permissão para cancelar esta encomenda.';
     END IF;
 
-    -- Regras de cancelamento (ajusta se quiseres)
+    -- Regras de cancelamento
     IF v_estado = 'Carrinho' THEN
         RAISE EXCEPTION 'Não é possível cancelar um carrinho.';
     END IF;
@@ -1572,7 +1565,7 @@ BEGIN
         RAISE EXCEPTION 'A encomenda já está cancelada.';
     END IF;
 
-    -- Só permitir cancelar pendente (recomendado)
+    -- Só permitir cancelar pendentes
     IF v_estado <> 'Pendente' THEN
         RAISE EXCEPTION 'Só podes cancelar encomendas no estado Pendente.';
     END IF;

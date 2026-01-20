@@ -57,8 +57,11 @@ urlpatterns = [
     path("admin/noticias/<int:noticia_id>/editar/", views.admin_noticia_edit, name="admin_noticia_edit"),
     path("admin/noticias/<int:noticia_id>/remover/", views.admin_noticia_delete, name="admin_noticia_delete"),
 
+    # ADMIN – RELATÓRIOS
     path("admin/relatorios/sync/", views.admin_relatorios_sync, name="admin_relatorios_sync"),
     path("admin/relatorios/", views.admin_relatorios, name="admin_relatorios"),
+
+    # ÁREA DE UTILIZADOR – CLIENTE
 
     path("conta/", views.area_utilizador, name="area_utilizador"),
     path("conta/perfil/", views.conta_editar_perfil, name="conta_editar_perfil"),
@@ -83,6 +86,8 @@ urlpatterns = [
     path("noticias/", views.noticias_lista, name="noticias_lista"),
     path("noticias/<int:noticia_id>/", views.noticia_detalhe, name="noticia_detalhe"),
     
+
+    # ÁREA DE UTILIZADOR – FORNECEDOR
     path("fornecedor/encomendas/", views.fornecedor_encomendas_list, name="fornecedor_encomendas_list"),
     path("fornecedor/encomendas/<int:encomenda_id>/", views.fornecedor_encomenda_detail, name="fornecedor_encomenda_detail"),
 ]

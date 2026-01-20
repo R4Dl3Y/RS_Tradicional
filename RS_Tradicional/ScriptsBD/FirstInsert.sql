@@ -9,7 +9,8 @@ INSERT INTO Tipo_Utilizador (designacao) VALUES
     ('Cliente');
 
 -- UTILIZADORES (ADMIN / GESTOR / CLIENTE)
--- Substituir <HASH_...> pelas hashes reais geradas com make_password
+-- Substituir <HASH_...> pelas hashes reais geradas com make_password no Django shell ou pelo painel de administração
+-- Exemplo: make_password("admin123")
 INSERT INTO Utilizador (nome, email, password, morada, nif, id_tipo_utilizador) VALUES
     ('Administrador RS', 'admin@rstradicional.pt',  '<HASH_ADMIN>',  'Rua Principal 1, Viseu', '111111111', 1),
     ('Gestor RS',        'gestor@rstradicional.pt', '<HASH_GESTOR>', 'Av. Central 25, Viseu',  '222222222', 2),
@@ -37,7 +38,7 @@ INSERT INTO Produto (nome, descricao, preco, stock, is_approved, estado_produto,
      1,   -- Queijos Tradicionais
      1);  -- Queijaria da Serra
 
--- 2: produto ainda PENDENTE (imagina que foi sugerido por fornecedor/gestor)
+-- 2: produto ainda PENDENTE (supondo que foi sugerido por fornecedor/gestor)
 INSERT INTO Produto (nome, descricao, preco, stock, is_approved, estado_produto, id_tipo_produto, id_fornecedor) VALUES
     ('Queijo de Cabra Curado',
      'Queijo curado de cabra, sabor intenso.',
@@ -48,7 +49,7 @@ INSERT INTO Produto (nome, descricao, preco, stock, is_approved, estado_produto,
      1,
      1);
 
--- IMAGENS DOS PRODUTOS (OPCIONAL)
+-- IMAGENS DOS PRODUTOS (TO-DO)
 INSERT INTO Imagem_Produto (id_produto, caminho) VALUES
     (1, '/imagens/produtos/queijo_serra_dop.jpg'),
     (2, '/imagens/produtos/queijo_cabra_curado.jpg');
@@ -66,7 +67,7 @@ INSERT INTO Noticia (titulo, conteudo, id_tipo_noticia, autor, data_publicacao) 
      1,   -- Autor: Admin
      CURRENT_DATE);
 
--- IMAGEM DA NOTÍCIA (OPCIONAL)
+-- IMAGEM DA NOTÍCIA (TO-DO)
 INSERT INTO Imagem_Noticia (id_noticia, uri) VALUES
     (1, '/imagens/noticias/boas_vindas.jpg');
 
@@ -88,7 +89,7 @@ INSERT INTO Tipo_Utilizador (designacao)
 VALUES ('Fornecedor');
 
 -- Utilizador que representa um fornecedor
--- Substitui <HASH_FORNECEDOR> por uma hash gerada com make_password("fornecedor123"), por ex.
+-- Substituir <HASH_FORNECEDOR> por uma hash gerada com make_password("fornecedor123"), por exemplo.
 INSERT INTO Utilizador (nome, email, password, morada, nif, id_tipo_utilizador)
 VALUES (
     'Fornecedor Queijaria',
@@ -99,7 +100,7 @@ VALUES (
     (SELECT id_tipo_utilizador FROM Tipo_Utilizador WHERE designacao = 'Fornecedor')
 );
 
--- Fornecedor com o MESMO email (para conseguirmos associar)
+-- Fornecedor com o MESMO email (para conseguirmos associar o utilizador ao fornecedor)
 INSERT INTO Fornecedor (nome, contacto, email, nif, isSingular, morada, imagem_fornecedor)
 VALUES (
     'Queijaria da Serra',
