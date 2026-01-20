@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Os meus produtos - Área do Fornecedor{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Fornecedor · Produtos</span>
+            <h2 class="admin-title">Os meus produtos</h2>
+            <p class="admin-subtitle">
+                Produtos submetidos por <strong>{{ fornecedor.nome }}</strong>.
+                Aqui podes ver o estado de aprovação e disponibilidade.
+            </p>
+        </div>
+        <div class="admin-hero-user" style="gap: 0.5rem;">
+            <a href="{% url 'fornecedor_product_create' %}" class="btn btn-primary">
+                + Submeter novo produto
+            </a>
+        </div>
+    </section>
+
+    <section>
+        {% if produtos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Preço</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Aprovação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                        <tr>
+                            <td>{{ p.id_produto }}</td>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.tipo_designacao|default:"—" }}</td>
+                            <td>{{ p.preco }} €</td>
+                            <td>{{ p.stock }}</td>
+                            <td>{{ p.estado_produto }}</td>
+                            <td>
+                                {% if p.is_approved %}
+                                    ✅ Aprovado
+                                {% elif p.estado_produto == "Rejeitado" %}
+                                    ❌ Rejeitado
+                                {% else %}
+                                    ⏳ Pendente
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não tens produtos submetidos ainda.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

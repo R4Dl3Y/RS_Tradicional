@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Carrinho',
+    'Core',
+    'Encomendas',
+    'Faturacao',
+    'Noticias',
+    'Produtos',
+    'Utilizadores',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +91,39 @@ DATABASES = {
         'TEST': {
             'NAME': 'RS_Tradicional_test',
         }
+    },
+    'admin': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'RS_Tradicional',
+        'USER': 'admin',
+        'PASSWORD': 'DbAdmin01',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'RS_Tradicional_test',
+        }
+    },
+    'cliente': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'RS_Tradicional',
+        'USER': 'cliente',
+        'PASSWORD': 'DbCliente01',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'RS_Tradicional_test',
+        }
+    },
+    'fornecedor': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'RS_Tradicional',
+        'USER': 'fornecedor',
+        'PASSWORD': 'DbFornecedor01',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'RS_Tradicional_test',
+        }
     }
 }
 
@@ -123,6 +164,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -131,3 +178,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuração para upload de imagens
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# =========================
+# MongoDB (Relatórios)
+# =========================
+MONGO = {
+    "CLIENT_NAME": "rs_tradicional",
+    "URI": os.getenv("MONGO_URI", "mongodb://localhost:27017"),
+    "DB_NAME": os.getenv("MONGO_DB_NAME", "rs_tradicional_reports"),
+}

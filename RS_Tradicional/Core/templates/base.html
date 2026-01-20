@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}RS Tradicional{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div>
+                <div class="header-title">RS Tradicional</div>
+                <nav class="navbar">
+                    <ul class="navbar-list">
+                        <li><a class="navbar-link" href="{% url 'home' %}">Início</a></li>
+                        <li><a class="navbar-link" href="{% url 'loja_produtos' %}">Loja</a></li>
+                        <li><a class="navbar-link" href="{% url 'minhas_encomendas' %}">Encomendas</a></li>
+                        <li><a class="navbar-link" href="{% url 'noticias_lista' %}">Notícias</a></li>
+                        <li><a class="navbar-link" href="{% url 'area_utilizador' %}">Área de Utilizador</a></li>
+
+                        {# Tab Admin só aparece para utilizadores com tipo 'admin' ou 'gestor' #}
+                        {% if request.session.user_tipo %}
+                            {% if request.session.user_tipo|lower == 'admin' or request.session.user_tipo|lower == 'gestor' %}
+                                <li><a class="navbar-link" href="{% url 'admin_dashboard' %}">Admin</a></li>
+                            {% endif %}
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            </div>
+
+            {% if request.session.user_id %}
+    <div class="navbar-user">
+        <span class="navbar-user-greeting">
+            Olá, {{ request.session.user_nome }}!
+        </span>
+
+        {% if request.session.user_tipo and request.session.user_tipo|lower == "fornecedor" %}
+            <a class="btn btn-fornecedor" href="{% url 'fornecedor_product_list' %}">
+                ➕ Submeter produto
+            </a>
+        {% endif %}
+
+        <a class="btn btn-light" href="#" onclick="abrirModalLogout(event);">
+            Logout
+        </a>
+    </div>
+{% else %}
+                <div class="navbar-actions">
+                    <a class="btn btn-light" href="{% url 'login' %}">Login</a>
+                    <a class="btn btn-primary" href="{% url 'register' %}">Registo</a>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="main-container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 RS Tradicional — Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Modal de confirmação de logout -->
+    <div id="logout-modal" class="modal-backdrop" style="display:none;">
+        <div class="modal-box">
+            <p>Tens a certeza que queres terminar sessão?</p>
+            <div class="modal-actions">
+                <button class="btn" type="button" onclick="fecharModalLogout()">Cancelar</button>
+                <a class="btn btn-primary" href="{% url 'logout' %}">Sim, terminar sessão</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalLogout(event) {
+            event.preventDefault();
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function fecharModalLogout() {
+            const modal = document.getElementById('logout-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

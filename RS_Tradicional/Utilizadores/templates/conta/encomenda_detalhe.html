@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Encomenda #{{ encomenda.id_encomenda }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Área de Utilizador · Encomendas</span>
+            <h2 class="admin-title">Encomenda #{{ encomenda.id_encomenda }}</h2>
+            <p class="admin-subtitle">
+                <strong>Data:</strong> {{ encomenda.data_encomenda }} ·
+                <strong>Estado:</strong> {{ encomenda.estado_encomenda }}
+            </p>
+        </div>
+        <div class="admin-hero-user" style="gap: 0.75rem;">
+            <div class="admin-pill">
+                Total:
+                <strong>{{ total_encomenda }} €</strong>
+            </div>
+            <a href="{% url 'minhas_encomendas' %}" class="btn">Voltar às minhas encomendas</a>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="admin-section-title">Produtos da encomenda</h3>
+
+        {% if linhas %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço unit.</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in linhas %}
+                        <tr>
+                            <td>{{ linha.nome_produto|default:"—" }}</td>
+                            <td>{{ linha.preco_produto|floatformat:2 }} €</td>
+                            <td>{{ linha.quantidade }}</td>
+                            <td>{{ linha.subtotal|floatformat:2 }} €</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Esta encomenda ainda não tem produtos associados.</p>
+        {% endif %}
+    </section>
+
+</div>
+
+{% endblock %}

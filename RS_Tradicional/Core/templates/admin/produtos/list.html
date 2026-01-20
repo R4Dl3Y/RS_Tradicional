@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Produtos - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Produtos</span>
+            <h2 class="admin-title">Gestão de Produtos</h2>
+            <p class="admin-subtitle">
+                Lista de produtos registados no sistema. Podes criar novos produtos, editar ou remover existentes
+                e controlar o seu estado e aprovação.
+            </p>
+        </div>
+        <div class="admin-hero-user" style="gap: 0.5rem;">
+            <a href="{% url 'admin_product_pending_list' %}" class="btn">
+                Pendentes de aprovação
+            </a>
+            <a href="{% url 'admin_product_create' %}" class="btn btn-primary">
+                + Novo produto
+            </a>
+        </div>
+    </section>
+
+    <section>
+        {% if produtos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Fornecedor</th>
+                        <th>Preço</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Aprovado</th>
+                        <th style="width: 170px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                        <tr>
+                            <td>{{ p.id_produto }}</td>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.tipo_designacao|default:"—" }}</td>
+                            <td>{{ p.fornecedor_nome|default:"—" }}</td>
+                            <td>{{ p.preco }} €</td>
+                            <td>{{ p.stock }}</td>
+                            <td>{{ p.estado_produto }}</td>
+                            <td>
+                                {% if p.is_approved %}
+                                    ✅
+                                {% else %}
+                                    ⏳
+                                {% endif %}
+                            </td>
+                            <td class="admin-table-actions">
+                                <a href="{% url 'admin_product_edit' p.id_produto %}"
+                                   class="admin-table-link">Editar</a>
+                                <span>·</span>
+                                <a href="{% url 'admin_product_delete' p.id_produto %}"
+                                   class="admin-table-link admin-table-link-danger">
+                                    Remover
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não existem produtos registados.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

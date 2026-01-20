@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Produtos Pendentes - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Produtos</span>
+            <h2 class="admin-title">Produtos Pendentes de Aprovação</h2>
+            <p class="admin-subtitle">
+                Nesta lista aparecem todos os produtos que ainda não foram aprovados
+                (estado "Pendente"). Podes aprovar ou rejeitar cada produto individualmente.
+            </p>
+        </div>
+        <div class="admin-hero-user">
+            <a href="{% url 'admin_product_list' %}" class="btn">Voltar à lista completa</a>
+        </div>
+    </section>
+
+    <section>
+        {% if produtos %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Fornecedor</th>
+                        <th>Preço</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th style="width: 230px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                        <tr>
+                            <td>{{ p.id_produto }}</td>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.tipo_designacao|default:"—" }}</td>
+                            <td>{{ p.fornecedor_nome|default:"—" }}</td>
+                            <td>{{ p.preco }} €</td>
+                            <td>{{ p.stock }}</td>
+                            <td>{{ p.estado_produto }}</td>
+                            <td class="admin-table-actions">
+                                <a href="{% url 'admin_product_edit' p.id_produto %}"
+                                   class="admin-table-link">
+                                    Ver / Editar
+                                </a>
+                                <span>·</span>
+
+                                <form method="post"
+                                      action="{% url 'admin_product_approve' p.id_produto %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="admin-table-link"
+                                            style="border:none;background:none;padding:0;cursor:pointer;">
+                                        ✅ Aprovar
+                                    </button>
+                                </form>
+
+                                <span>·</span>
+
+                                <form method="post"
+                                      action="{% url 'admin_product_reject' p.id_produto %}"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="admin-table-link admin-table-link-danger"
+                                            style="border:none;background:none;padding:0;cursor:pointer;">
+                                        ❌ Rejeitar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não existem produtos pendentes de aprovação.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

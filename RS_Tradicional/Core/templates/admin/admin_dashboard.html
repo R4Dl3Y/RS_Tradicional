@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Painel de Administração - RS Tradicional{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Painel Admin</span>
+            <h2 class="admin-title">{{ titulo }}</h2>
+            <p class="admin-subtitle">
+                Gere os principais aspetos da RS Tradicional: produtos, tipos de produto, utilizadores,
+                fornecedores, encomendas, notícias e relatórios. Escolhe uma das secções abaixo
+                para começar.
+            </p>
+        </div>
+
+        <div class="admin-hero-user">
+            <p class="admin-user-line">
+                Estás autenticado como
+                <span class="admin-user-name">{{ request.session.user_nome }}</span>
+                (<span class="admin-user-role">{{ request.session.user_tipo|default:"admin" }}</span>)
+            </p>
+        </div>
+    </section>
+
+    <section class="admin-grid">
+        <!-- Produtos -->
+        <article class="admin-card">
+            <div class="admin-card-icon">🛒</div>
+            <h3 class="admin-card-title">Gestão de Produtos</h3>
+            <p class="admin-card-text">
+                Adiciona novos produtos, atualiza informações existentes ou remove itens do catálogo.
+            </p>
+            <a href="{% url 'admin_product_list' %}" class="btn btn-primary admin-card-btn">Ir para Produtos</a>
+        </article>
+
+        <!-- Tipos de Produto -->
+        <article class="admin-card">
+            <div class="admin-card-icon">🏷️</div>
+            <h3 class="admin-card-title">Tipos de Produto</h3>
+            <p class="admin-card-text">
+                Define e organiza categorias de produto como queijos, enchidos, cabazes, etc.
+            </p>
+            <a href="{% url 'admin_tipo_produto_list' %}" class="btn btn-primary admin-card-btn">
+                Gerir Tipos de Produto
+            </a>
+        </article>
+
+        <!-- Utilizadores -->
+        <article class="admin-card">
+            <div class="admin-card-icon">👥</div>
+            <h3 class="admin-card-title">Gestão de Utilizadores</h3>
+            <p class="admin-card-text">
+                Consulta a lista de utilizadores registados, altera permissões ou bloqueia contas.
+            </p>
+            <a href="{% url 'admin_user_list' %}" class="btn btn-primary admin-card-btn">
+                Ir para Utilizadores
+            </a>
+        </article>
+
+        <!-- Tipos de Utilizador -->
+        <article class="admin-card">
+            <div class="admin-card-icon">🔐</div>
+            <h3 class="admin-card-title">Tipos de Utilizador</h3>
+            <p class="admin-card-text">
+                Define perfis como <em>admin</em>, <em>cliente</em> e outros níveis de acesso.
+            </p>
+            <a href="{% url 'admin_tipo_utilizador_list' %}" class="btn btn-primary admin-card-btn">
+                Gerir Tipos de Utilizador
+            </a>
+        </article>
+
+        <!-- Fornecedores -->
+        <article class="admin-card">
+            <div class="admin-card-icon">🚚</div>
+            <h3 class="admin-card-title">Fornecedores</h3>
+            <p class="admin-card-text">
+                Gere fornecedores, contactos, NIF e informação de morada associada.
+            </p>
+            <a href="{% url 'admin_fornecedor_list' %}" class="btn btn-primary admin-card-btn">Ir para Fornecedores</a>
+        </article>
+
+        <!-- Encomendas -->
+        <article class="admin-card">
+            <div class="admin-card-icon">📦</div>
+            <h3 class="admin-card-title">Encomendas</h3>
+            <p class="admin-card-text">
+                Acompanha encomendas, estados, expedição e histórico de compras.
+            </p>
+            <a href="{% url 'admin_encomenda_list' %}" class="btn btn-primary admin-card-btn">
+                Ir para Encomendas
+            </a>
+        </article>
+
+        <!-- Notícias -->
+        <article class="admin-card">
+            <div class="admin-card-icon">📰</div>
+            <h3 class="admin-card-title">Gestão de Notícias</h3>
+            <p class="admin-card-text">
+                Cria, edita e remove notícias e destaques que aparecem na página inicial.
+            </p>
+            <a href="{% url 'admin_noticia_list' %}" class="btn btn-primary admin-card-btn">
+                Ir para Notícias
+            </a>
+        </article>
+
+        <!-- Relatórios -->
+        <article class="admin-card">
+            <div class="admin-card-icon">📊</div>
+            <h3 class="admin-card-title">Relatórios</h3>
+            <p class="admin-card-text">
+                Consulta estatísticas de vendas, encomendas e atividade dos utilizadores.
+            </p>
+            <a href="{% url 'admin_relatorios' %}" class="btn btn-primary admin-card-btn">Ver Relatórios</a>
+        </article>
+    </section>
+
+</div>
+
+{% endblock %}

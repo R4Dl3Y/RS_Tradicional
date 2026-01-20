@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ acao }} Produto - Painel de Administração{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Produtos</span>
+            <h2 class="admin-title">{{ acao }} Produto</h2>
+            <p class="admin-subtitle">
+                Preenche os dados do produto. Os campos assinalados com * são obrigatórios.
+            </p>
+        </div>
+    </section>
+
+    <section class="admin-form-section">
+        <form method="post" class="admin-form">
+            {% csrf_token %}
+
+            <div class="admin-form-grid">
+                <div class="admin-field">
+                    <label for="id_nome">Nome *</label>
+                    <input type="text" id="id_nome" name="nome"
+                           value="{{ produto.nome|default_if_none:'' }}" required>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_preco">Preço (€) *</label>
+                    <input type="text" id="id_preco" name="preco"
+                           value="{{ produto.preco|default_if_none:'' }}" required>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_stock">Stock *</label>
+                    <input type="number" id="id_stock" name="stock"
+                           value="{{ produto.stock|default_if_none:'' }}"
+                           min="0" required>
+                </div>
+
+                <div class="admin-field admin-field-full">
+                    <label for="id_descricao">Descrição</label>
+                    <textarea id="id_descricao" name="descricao" rows="3">{{ produto.descricao|default_if_none:'' }}</textarea>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_tipo_produto">Tipo de Produto</label>
+                    <select id="id_tipo_produto" name="tipo_produto">
+                        <option value="">— Nenhum —</option>
+                        {% for t in tipos %}
+                            <option value="{{ t.id_tipo_produto }}"
+                                {% if produto and produto.id_tipo_produto == t.id_tipo_produto %}selected{% endif %}>
+                                {{ t.designacao }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_fornecedor">Fornecedor</label>
+                    <select id="id_fornecedor" name="fornecedor">
+                        <option value="">— Nenhum —</option>
+                        {% for f in fornecedores %}
+                            <option value="{{ f.id_fornecedor }}"
+                                {% if produto and produto.id_fornecedor == f.id_fornecedor %}selected{% endif %}>
+                                {{ f.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_estado_produto">Estado do Produto</label>
+                    {% with produto.estado_produto|default:"Ativo" as est %}
+                        <select id="id_estado_produto" name="estado_produto">
+                            <option value="Ativo" {% if est == "Ativo" %}selected{% endif %}>Ativo</option>
+                            <option value="Pendente" {% if est == "Pendente" %}selected{% endif %}>Pendente</option>
+                            <option value="Inativo" {% if est == "Inativo" %}selected{% endif %}>Inativo</option>
+                        </select>
+                    {% endwith %}
+                </div>
+
+                <div class="admin-field">
+                    <label for="id_is_approved">Aprovação</label>
+                    <div class="admin-field-inline">
+                        <label class="admin-checkbox-label">
+                            <input type="checkbox" id="id_is_approved" name="is_approved"
+                                   {% if produto and produto.is_approved %}checked{% endif %}>
+                            Produto aprovado (visível para clientes)
+                        </label>
+                        <p class="admin-field-hint">
+                            Se desmarcado, o produto permanece em estado pendente/interno e não é mostrado na loja.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{% url 'admin_product_list' %}" class="btn">Cancelar</a>
+                <button type="submit" class="btn btn-primary">{{ acao }}</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

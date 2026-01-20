@@ -1,83 +1,124 @@
---Views Simples Utilizadores
+-- DEPRECATED ==================================================================================
 
-CREATE VIEW vw_listarUtilizadores AS
+-- =========================================
+-- DROPs
+-- =========================================
 
-SELECT id_utilizador, nome, email, morada, nif, tp.designacao FROM utilizador
-JOIN tipo_utilizador AS tp
-ON utilizador.id_tipo_utilizador = tp.id_tipo_utilizador;
+DROP VIEW IF EXISTS vw_produtos_publicos;
+DROP VIEW IF EXISTS vw_produtos_admin;
+DROP VIEW IF EXISTS vw_noticias_publicas;
+DROP VIEW IF EXISTS vw_noticias_admin;
+DROP VIEW IF EXISTS vw_encomendas_cliente;
+DROP VIEW IF EXISTS vw_encomenda_linhas;
 
+-- =========================================
+-- LOJA: produtos aprovados e ativos
+-- =========================================
 
---Views Simples Produtos
-
-CREATE VIEW vw_listarProdutos AS
-
-SELECT id_produto, produto.nome, descricao, preco, stock, tp.designacao AS TipoProduto, fn.nome AS Fornecedor FROM produto
-JOIN tipo_produto AS tp
-ON produto.id_tipo_produto = tp.id_tipo_produto
-JOIN fornecedor AS fn
-ON produto.id_fornecedor = fn.id_fornecedor;
-
-
---Views Materializadas Utilizadores
-
-CREATE MATERIALIZED VIEW mvw_utilizadoresMoradaViseu AS
-SELECT id_utilizador, nome, email, morada, nif, tp.designacao FROM utilizador
-JOIN tipo_utilizador AS tp
-ON utilizador.id_tipo_utilizador = tp.id_tipo_utilizador
-WHERE morada LIKE '%Viseu%' OR morada LIKE '%viseu%';
-
---Views Materializadas Produtos
-
-CREATE MATERIALIZED VIEW mvw_produtosComMuitoStock AS
-SELECT id_produto, produto.nome, descricao, stock, tp.designacao AS TipoProduto, fn.nome AS Fornecedor FROM produto
-JOIN tipo_produto AS tp
-ON produto.id_tipo_produto = tp.id_tipo_produto
-JOIN fornecedor AS fn
-ON produto.id_fornecedor = fn.id_fornecedor
-ORDER BY stock DESC 
-LIMIT 10;
-
-----------------
-
--- View simples: Últimas encomendas
-CREATE OR REPLACE VIEW vw_ultimas_encomendas AS
-SELECT e.id_encomenda,
-       e.data_encomenda,
-       e.valor_total,
-       ec.descricao AS estado
-  FROM encomenda e
-  JOIN estado_carrinho ec ON e.estado = ec.id_estado
-ORDER BY e.data_encomenda DESC
-LIMIT 20;
-
--- View simples: Notícias por tipo
-CREATE OR REPLACE VIEW vw_noticias_por_tipo AS
-SELECT n.id_noticia,
-       n.titulo,
-       tn.nome AS tipo_noticia,
-       n.data_publicacao
-  FROM noticia n
-  JOIN tipo_noticia tn ON n.id_tipo_noticia = tn.id_tipo_noticia
-ORDER BY n.data_publicacao DESC;
-
-
--- View materializada: Quantidade de imagens por notícia
-CREATE MATERIALIZED VIEW vw_qtd_imagens_por_noticia AS
-SELECT n.id_noticia,
-       n.titulo,
-       COUNT(i.id_imagem) AS total_imagens
-  FROM noticia n
-  LEFT JOIN imagem_noticia i ON n.id_noticia = i.id_noticia
-GROUP BY n.id_noticia, n.titulo
-ORDER BY total_imagens DESC;
-
--- View materializada: Resumo de encomendas por estado
-CREATE MATERIALIZED VIEW vw_encomendas_por_estado AS
+CREATE OR REPLACE VIEW vw_produtos_publicos AS
 SELECT
-  ec.descricao AS estado,
-  COUNT(e.id_encomenda) AS qtd_encomendas,
-  COALESCE(SUM(e.valor_total), 0) AS total_faturado
+    p.id_produto,
+    p.nome,
+    p.descricao,
+    p.preco,
+    p.stock,
+    p.estado_produto,
+    p.is_approved,
+    tp.designacao AS tipo_produto,
+    f.nome        AS fornecedor_nome
+FROM produto p
+LEFT JOIN tipo_produto tp ON p.id_tipo_produto = tp.id_tipo_produto
+LEFT JOIN fornecedor   f  ON p.id_fornecedor   = f.id_fornecedor
+WHERE p.is_approved = TRUE
+  AND p.estado_produto = 'Ativo';
+
+GRANT SELECT ON vw_produtos_publicos
+TO rs_cliente, rs_fornecedor, rs_gestor, rs_admin;
+
+-- =========================================
+-- Produtos (admin)
+-- =========================================
+
+CREATE OR REPLACE VIEW vw_produtos_admin AS
+SELECT
+    p.*,
+    tp.designacao AS tipo_produto,
+    f.nome        AS fornecedor_nome
+FROM produto p
+LEFT JOIN tipo_produto tp ON p.id_tipo_produto = tp.id_tipo_produto
+LEFT JOIN fornecedor   f  ON p.id_fornecedor   = f.id_fornecedor;
+
+GRANT SELECT ON vw_produtos_admin
+TO rs_gestor, rs_admin;
+
+-- =========================================
+-- Notícias públicas
+-- =========================================
+
+CREATE OR REPLACE VIEW vw_noticias_publicas AS
+SELECT
+    n.id_noticia,
+    n.titulo,
+    n.conteudo,
+    n.data_publicacao,
+    tn.nome AS tipo_noticia,
+    u.nome  AS autor_nome,
+    u.email AS autor_email
+FROM noticia n
+LEFT JOIN tipo_noticia tn ON n.id_tipo_noticia = tn.id_tipo_noticia
+LEFT JOIN utilizador   u  ON n.autor           = u.id_utilizador;
+
+GRANT SELECT ON vw_noticias_publicas
+TO rs_cliente, rs_fornecedor, rs_gestor, rs_admin;
+
+-- =========================================
+-- Notícias (admin)
+-- =========================================
+
+CREATE OR REPLACE VIEW vw_noticias_admin AS
+SELECT
+    n.*,
+    tn.nome AS tipo_noticia,
+    u.nome  AS autor_nome,
+    u.email AS autor_email
+FROM noticia n
+LEFT JOIN tipo_noticia tn ON n.id_tipo_noticia = tn.id_tipo_noticia
+LEFT JOIN utilizador   u  ON n.autor           = u.id_utilizador;
+
+GRANT SELECT ON vw_noticias_admin
+TO rs_gestor, rs_admin;
+
+-- =========================================
+-- Encomendas (cliente)
+-- =========================================
+
+CREATE OR REPLACE VIEW vw_encomendas_cliente AS
+SELECT
+    e.id_encomenda,
+    e.data_encomenda,
+    e.estado_encomenda,
+    u.id_utilizador,
+    u.nome  AS cliente_nome,
+    u.email AS cliente_email
 FROM encomenda e
-JOIN estado_carrinho ec ON e.estado = ec.id_estado
-GROUP BY ec.descricao
-ORDER BY qtd_encomendas DESC;
+JOIN utilizador u ON e.id_utilizador = u.id_utilizador;
+
+GRANT SELECT ON vw_encomendas_cliente
+TO rs_cliente, rs_fornecedor, rs_gestor, rs_admin;
+
+-- =========================================
+-- Linhas de encomenda
+-- =========================================
+
+CREATE OR REPLACE VIEW vw_encomenda_linhas AS
+SELECT
+    ep.id_encomenda,
+    ep.id_produto,
+    ep.quantidade,
+    p.nome  AS produto_nome,
+    p.preco AS produto_preco
+FROM encomendas_produtos ep
+JOIN produto p ON ep.id_produto = p.id_produto;
+
+GRANT SELECT ON vw_encomenda_linhas
+TO rs_cliente, rs_fornecedor, rs_gestor, rs_admin;

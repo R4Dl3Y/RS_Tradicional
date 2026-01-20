@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Área de Utilizador{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <section class="admin-hero">
+    <div class="admin-hero-top">
+      <span class="badge admin-badge">Área de Utilizador</span>
+      <h2 class="admin-title">Olá, {{ perfil.nome }}</h2>
+      <p class="admin-subtitle">
+        Email: {{ perfil.email }} · NIF: {{ perfil.nif }} · Tipo: {{ perfil.tipo_designacao }}
+      </p>
+    </div>
+    <div class="admin-hero-user" style="gap:0.5rem;">
+      <a class="btn" href="{% url 'conta_editar_perfil' %}">Editar perfil</a>
+      <a class="btn" href="{% url 'conta_alterar_password' %}">Alterar password</a>
+    </div>
+  </section>
+
+  <section style="margin-top:1rem;">
+    <div class="admin-hero-user" style="gap:0.5rem;justify-content:flex-start;">
+      {% if user_tipo == "cliente" %}
+        <a class="btn btn-primary" href="{% url 'minhas_encomendas' %}">Histórico de compras</a>
+      {% elif user_tipo == "fornecedor" %}
+        <a class="btn btn-primary" href="{% url 'fornecedor_product_list' %}">Os meus produtos</a>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
