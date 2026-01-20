@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Encomendas - Fornecedor{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <section class="admin-hero">
+    <div class="admin-hero-top">
+      <span class="badge admin-badge">Fornecedor · Encomendas</span>
+      <h2 class="admin-title">Histórico de Vendas</h2>
+      <p class="admin-subtitle">
+        Encomendas que incluem produtos de <strong>{{ fornecedor.nome }}</strong>.
+      </p>
+    </div>
+    <div class="admin-hero-user" style="gap:0.5rem;">
+      <a href="{% url 'fornecedor_product_list' %}" class="btn">Os meus produtos</a>
+    </div>
+  </section>
+
+  <section>
+    {% if encomendas %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Data</th>
+            <th>Estado</th>
+            <th>Cliente</th>
+            <th>Total (teu)</th>
+            <th style="width:140px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in encomendas %}
+            <tr>
+              <td>{{ e.id_encomenda }}</td>
+              <td>{{ e.data_encomenda }}</td>
+              <td>{{ e.estado_encomenda }}</td>
+              <td>{{ e.cliente_nome }} ({{ e.cliente_email }})</td>
+              <td>{{ e.total_fornecedor|floatformat:2 }} €</td>
+              <td class="admin-table-actions">
+                <a class="admin-table-link" href="{% url 'fornecedor_encomenda_detail' e.id_encomenda %}">
+                  Ver detalhe
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Ainda não existem encomendas com os teus produtos.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

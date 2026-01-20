@@ -55,7 +55,7 @@
                         <option value="">— Nenhum —</option>
                         {% for t in tipos %}
                             <option value="{{ t.id_tipo_produto }}"
-                                {% if produto.id_tipo_produto.id_tipo_produto == t.id_tipo_produto %}selected{% endif %}>
+                                {% if produto and produto.id_tipo_produto == t.id_tipo_produto %}selected{% endif %}>
                                 {{ t.designacao }}
                             </option>
                         {% endfor %}
@@ -68,7 +68,7 @@
                         <option value="">— Nenhum —</option>
                         {% for f in fornecedores %}
                             <option value="{{ f.id_fornecedor }}"
-                                {% if produto.id_fornecedor.id_fornecedor == f.id_fornecedor %}selected{% endif %}>
+                                {% if produto and produto.id_fornecedor == f.id_fornecedor %}selected{% endif %}>
                                 {{ f.nome }}
                             </option>
                         {% endfor %}
@@ -91,7 +91,7 @@
                     <div class="admin-field-inline">
                         <label class="admin-checkbox-label">
                             <input type="checkbox" id="id_is_approved" name="is_approved"
-                                   {% if produto.is_approved or produto is not defined %}checked{% endif %}>
+                                   {% if produto and produto.is_approved %}checked{% endif %}>
                             Produto aprovado (visível para clientes)
                         </label>
                         <p class="admin-field-hint">

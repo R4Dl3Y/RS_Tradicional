@@ -43,24 +43,16 @@
                         <tr>
                             <td>{{ e.id_encomenda }}</td>
                             <td>{{ e.data_encomenda }}</td>
-                            <td>{{ e.id_utilizador.nome }}</td>
-                            <td>{{ e.id_utilizador.email }}</td>
+                            <td>{{ e.utilizador_nome|default:"—" }}</td>
+                            <td>{{ e.utilizador_email|default:"—" }}</td>
                             <td>{{ e.estado_encomenda }}</td>
                             <td class="admin-table-actions">
-                                <a href="{% url 'admin_encomenda_detail' e.id_encomenda %}"
-                                   class="admin-table-link">
-                                    Detalhe
-                                </a>
+                                <a href="{% url 'admin_encomenda_detail' e.id_encomenda %}" class="admin-table-link">Detalhe</a>
                                 <span>·</span>
-                                <a href="{% url 'admin_encomenda_edit' e.id_encomenda %}"
-                                   class="admin-table-link">
-                                    Editar
-                                </a>
+                                <a href="{% url 'admin_encomenda_edit' e.id_encomenda %}" class="admin-table-link">Editar</a>
                                 <span>·</span>
                                 <a href="{% url 'admin_encomenda_delete' e.id_encomenda %}"
-                                   class="admin-table-link admin-table-link-danger">
-                                    Remover
-                                </a>
+                                   class="admin-table-link admin-table-link-danger">Remover</a>
                             </td>
                         </tr>
                     {% endfor %}

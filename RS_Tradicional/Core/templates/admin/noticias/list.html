@@ -42,8 +42,8 @@
                         <tr>
                             <td>{{ n.id_noticia }}</td>
                             <td>{{ n.titulo }}</td>
-                            <td>{{ n.id_tipo_noticia.nome|default:"—" }}</td>
-                            <td>{{ n.autor.nome|default:"—" }}</td>
+                            <td>{{ n.tipo_noticia|default:"—" }}</td>
+                            <td>{{ n.autor_nome|default:"—" }}</td>
                             <td>{{ n.data_publicacao }}</td>
                             <td class="admin-table-actions">
                                 <a href="{% url 'admin_noticia_edit' n.id_noticia %}" class="admin-table-link">

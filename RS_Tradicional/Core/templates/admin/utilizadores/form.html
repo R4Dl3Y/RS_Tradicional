@@ -55,7 +55,7 @@
                         <option value="">— Nenhum —</option>
                         {% for t in tipos %}
                             <option value="{{ t.id_tipo_utilizador }}"
-                                {% if utilizador.id_tipo_utilizador.id_tipo_utilizador == t.id_tipo_utilizador %}selected{% endif %}>
+                                {% if utilizador and utilizador.id_tipo_utilizador == t.id_tipo_utilizador %}selected{% endif %}>
                                 {{ t.designacao }}
                             </option>
                         {% endfor %}

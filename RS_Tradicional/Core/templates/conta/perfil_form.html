@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Editar perfil{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <section class="admin-hero">
+    <div class="admin-hero-top">
+      <span class="badge admin-badge">Conta</span>
+      <h2 class="admin-title">Editar perfil</h2>
+      <p class="admin-subtitle">Atualiza os teus dados.</p>
+    </div>
+  </section>
+
+  <section class="admin-form-section">
+    <form method="post" class="admin-form">
+      {% csrf_token %}
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label>Nome *</label>
+          <input type="text" name="nome" value="{{ perfil.nome|default_if_none:'' }}" required>
+        </div>
+
+        <div class="admin-field">
+          <label>Email *</label>
+          <input type="email" name="email" value="{{ perfil.email|default_if_none:'' }}" required>
+        </div>
+
+        <div class="admin-field">
+          <label>NIF *</label>
+          <input type="text" name="nif" maxlength="9" value="{{ perfil.nif|default_if_none:'' }}" required>
+        </div>
+
+        <div class="admin-field admin-field-full">
+          <label>Morada</label>
+          <textarea name="morada" rows="3">{{ perfil.morada|default_if_none:'' }}</textarea>
+        </div>
+      </div>
+
+      <div class="admin-form-actions">
+        <a href="{% url 'area_utilizador' %}" class="btn">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

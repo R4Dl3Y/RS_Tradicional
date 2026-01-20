@@ -57,19 +57,29 @@ urlpatterns = [
     path("admin/noticias/<int:noticia_id>/editar/", views.admin_noticia_edit, name="admin_noticia_edit"),
     path("admin/noticias/<int:noticia_id>/remover/", views.admin_noticia_delete, name="admin_noticia_delete"),
 
-
+    path("conta/", views.area_utilizador, name="area_utilizador"),
+    path("conta/perfil/", views.conta_editar_perfil, name="conta_editar_perfil"),
+    path("conta/password/", views.conta_alterar_password, name="conta_alterar_password"),
     path("conta/encomendas/", views.minhas_encomendas, name="minhas_encomendas"),
     path("conta/encomendas/<int:encomenda_id>/", views.minha_encomenda_detail, name="minha_encomenda_detail"),
+    path("conta/encomendas/<int:encomenda_id>/cancelar/", views.cliente_cancelar_encomenda, name="cliente_cancelar_encomenda"),
+
 
     # LOJA / CLIENTE
     path("loja/", views.loja_produtos, name="loja_produtos"),
     path("loja/adicionar/<int:produto_id>/", views.loja_adicionar_produto, name="loja_adicionar_produto"),
     path("loja/carrinho/", views.loja_carrinho, name="loja_carrinho"),
-    path("loja/carrinho/remover/<int:linha_id>/", views.loja_remover_linha, name="loja_remover_linha"),
+   # path("loja/carrinho/remover/<int:produto_id>/", views.loja_remover_linha, name="loja_remover_linha"),
     path("loja/carrinho/finalizar/", views.loja_finalizar_encomenda, name="loja_finalizar_encomenda"),
+    path("loja/carrinho/remover/<int:produto_id>/", views.loja_remover_quantidade, name="loja_remover_quantidade"),
+    path("loja/carrinho/adicionar/<int:produto_id>/", views.loja_adicionar_quantidade, name="loja_adicionar_quantidade"),
+
+
 
     # NOTÍCIAS – CLIENTE
     path("noticias/", views.noticias_lista, name="noticias_lista"),
     path("noticias/<int:noticia_id>/", views.noticia_detalhe, name="noticia_detalhe"),
-
+    
+    path("fornecedor/encomendas/", views.fornecedor_encomendas_list, name="fornecedor_encomendas_list"),
+    path("fornecedor/encomendas/<int:encomenda_id>/", views.fornecedor_encomenda_detail, name="fornecedor_encomenda_detail"),
 ]

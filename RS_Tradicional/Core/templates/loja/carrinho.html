@@ -18,6 +18,7 @@
                 Revê os produtos antes de finalizar a encomenda.
             </p>
         </div>
+
         <div class="admin-hero-user" style="gap:0.75rem;">
             {% if carrinho and linhas %}
                 <div class="admin-pill">
@@ -29,9 +30,7 @@
             <a href="{% url 'loja_produtos' %}" class="btn">Continuar a comprar</a>
 
             {% if carrinho and linhas %}
-                <form method="post"
-                      action="{% url 'loja_finalizar_encomenda' %}"
-                      style="display:inline;">
+                <form method="post" action="{% url 'loja_finalizar_encomenda' %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">
                         Finalizar encomenda
@@ -50,31 +49,58 @@
                         <th>Preço unit.</th>
                         <th>Quantidade</th>
                         <th>Subtotal</th>
-                        <th style="width: 120px;">Ações</th>
+                        <th style="width: 220px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for linha in linhas %}
                         <tr>
-                            <td>{{ linha.id_produto.nome }}</td>
-                            <td>{{ linha.id_produto.preco }} €</td>
+                            <td>{{ linha.nome_produto }}</td>
+                            <td>{{ linha.preco_produto|floatformat:2 }} €</td>
                             <td>{{ linha.quantidade }}</td>
+                            <td>{{ linha.preco_produto|floatformat:2 }} € × {{ linha.quantidade }}</td>
+
                             <td>
-                                {% if linha.id_produto.preco %}
-                                    {{ linha.id_produto.preco|floatformat:2 }} € × {{ linha.quantidade }}
-                                {% endif %}
-                            </td>
-                            <td class="admin-table-actions">
-                                <form method="post"
-                                      action="{% url 'loja_remover_linha' linha.id %}"
-                                      style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="admin-table-link admin-table-link-danger"
-                                            style="border:none;background:none;padding:0;cursor:pointer;">
-                                        Remover
-                                    </button>
-                                </form>
+                                <div style="display:flex;justify-content:flex-end;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+
+                                    <!-- Stepper REMOVER -->
+                                    <form method="post"
+                                          action="{% url 'loja_remover_quantidade' linha.id_produto %}"
+                                          style="display:flex;align-items:center;gap:0.35rem;">
+                                        {% csrf_token %}
+                                        <span style="opacity:0.7;font-size:0.9rem;">−</span>
+                                        <input type="number"
+                                               name="quantidade_remover"
+                                               min="1"
+                                               max="{{ linha.quantidade }}"
+                                               value="1"
+                                               style="width:56px;padding:6px 8px;border:1px solid #e5e5e5;border-radius:10px;">
+                                        <button type="submit"
+                                                title="Remover"
+                                                style="border:1px solid #ffd1d1;background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer;">
+                                            🗑️
+                                        </button>
+                                    </form>
+
+                                    <!-- Stepper ADICIONAR -->
+                                    <form method="post"
+                                          action="{% url 'loja_adicionar_quantidade' linha.id_produto %}"
+                                          style="display:flex;align-items:center;gap:0.35rem;">
+                                        {% csrf_token %}
+                                        <span style="opacity:0.7;font-size:0.9rem;">+</span>
+                                        <input type="number"
+                                               name="quantidade_adicionar"
+                                               min="1"
+                                               value="1"
+                                               style="width:56px;padding:6px 8px;border:1px solid #e5e5e5;border-radius:10px;">
+                                        <button type="submit"
+                                                title="Adicionar"
+                                                style="border:1px solid #d5f3df;background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer;">
+                                            ➕
+                                        </button>
+                                    </form>
+
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

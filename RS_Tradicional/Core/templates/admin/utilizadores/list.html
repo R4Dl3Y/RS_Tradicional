@@ -43,7 +43,7 @@
                             <td>{{ u.nome }}</td>
                             <td>{{ u.email }}</td>
                             <td>{{ u.nif }}</td>
-                            <td>{{ u.id_tipo_utilizador.designacao|default:"—" }}</td>
+                            <td>{{ u.tipo_designacao|default:"—" }}</td>
                             <td class="admin-table-actions">
                                 <a href="{% url 'admin_user_edit' u.id_utilizador %}" class="admin-table-link">Editar</a>
                                 <span>·</span>
