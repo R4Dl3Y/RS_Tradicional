@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Relatórios - Admin{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+
+    <section class="admin-hero">
+        <div class="admin-hero-top">
+            <span class="badge admin-badge">Admin · Relatórios</span>
+            <h2 class="admin-title">Relatórios</h2>
+            <p class="admin-subtitle">
+                Período: <strong>{{ start }}</strong> até <strong>{{ today }}</strong>
+            </p>
+        </div>
+
+        <div class="admin-hero-user" style="gap:0.5rem;">
+            <form method="post" action="{% url 'admin_relatorios_sync' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    Atualizar relatórios
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:1rem;margin-top:1rem;">
+        <div class="admin-pill">Vendas 30d: <strong>{{ total_30d|floatformat:2 }} €</strong></div>
+        <div class="admin-pill">Encomendas 30d: <strong>{{ count_30d }}</strong></div>
+        <div class="admin-pill">Ticket médio: <strong>{{ ticket_medio|floatformat:2 }} €</strong></div>
+    </section>
+
+    <section style="margin-top:1.5rem;">
+        <h3 class="admin-section-title">Vendas por dia</h3>
+        <canvas id="chartDaily" height="90"></canvas>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:1.5rem;margin-top:1.5rem;">
+        <div>
+            <h3 class="admin-section-title">Encomendas por estado</h3>
+            <canvas id="chartEstado" height="140"></canvas>
+        </div>
+
+        <div>
+            <h3 class="admin-section-title">Top Produtos (quantidade)</h3>
+            <canvas id="chartTopProd" height="140"></canvas>
+        </div>
+    </section>
+
+    <section style="margin-top:1.5rem;">
+        <h3 class="admin-section-title">Top Fornecedores (faturação)</h3>
+        <canvas id="chartTopForn" height="120"></canvas>
+    </section>
+
+</div>
+
+{# ---------- Dados em JSON para JS puro ---------- #}
+{{ daily|json_script:"daily-data" }}
+{{ por_estado|json_script:"estado-data" }}
+{{ top_produtos|json_script:"topprod-data" }}
+{{ top_fornecedores|json_script:"topforn-data" }}
+
+<script>
+    const daily = JSON.parse(document.getElementById("daily-data").textContent);
+    const porEstado = JSON.parse(document.getElementById("estado-data").textContent);
+    const topProd = JSON.parse(document.getElementById("topprod-data").textContent);
+    const topForn = JSON.parse(document.getElementById("topforn-data").textContent);
+
+    // Vendas por dia
+    const dailyLabels = daily.map(x => x._id);
+    const dailyTotals = daily.map(x => x.total);
+
+    new Chart(document.getElementById("chartDaily"), {
+        type: "line",
+        data: {
+            labels: dailyLabels,
+            datasets: [{ label: "Total €", data: dailyTotals }]
+        }
+    });
+
+    // Encomendas por estado
+    const estadoLabels = porEstado.map(x => x._id);
+    const estadoCounts = porEstado.map(x => x.count);
+
+    new Chart(document.getElementById("chartEstado"), {
+        type: "bar",
+        data: {
+            labels: estadoLabels,
+            datasets: [{ label: "Encomendas", data: estadoCounts }]
+        }
+    });
+
+    // Top produtos (quantidade)
+    const topProdLabels = topProd.map(x => x._id);
+    const topProdQtd = topProd.map(x => x.qtd);
+
+    new Chart(document.getElementById("chartTopProd"), {
+        type: "bar",
+        data: {
+            labels: topProdLabels,
+            datasets: [{ label: "Quantidade", data: topProdQtd }]
+        }
+    });
+
+    // Top fornecedores (faturação)
+    const topFornLabels = topForn.map(x => x._id || "(sem fornecedor)");
+    const topFornTotal = topForn.map(x => x.total);
+
+    new Chart(document.getElementById("chartTopForn"), {
+        type: "bar",
+        data: {
+            labels: topFornLabels,
+            datasets: [{ label: "Total €", data: topFornTotal }]
+        }
+    });
+</script>
+{% endblock %}

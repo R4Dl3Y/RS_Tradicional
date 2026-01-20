@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,3 +178,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuração para upload de imagens
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# =========================
+# MongoDB (Relatórios)
+# =========================
+MONGO = {
+    "CLIENT_NAME": "rs_tradicional",
+    "URI": os.getenv("MONGO_URI", "mongodb://localhost:27017"),
+    "DB_NAME": os.getenv("MONGO_DB_NAME", "rs_tradicional_reports"),
+}

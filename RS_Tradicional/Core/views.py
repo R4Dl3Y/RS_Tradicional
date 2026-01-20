@@ -8,6 +8,95 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 
+from datetime import date, timedelta
+from Core.mongo import get_mongo_db
+
+from django.core.management import call_command
+
+def admin_relatorios_sync(request):
+    if not _require_admin(request):
+        return redirect("home")
+
+    if request.method != "POST":
+        return redirect("admin_relatorios")
+
+    try:
+        call_command("sync_reports_mongo")
+        messages.success(request, "Relatórios atualizados com sucesso.")
+    except Exception as e:
+        messages.error(request, f"Não foi possível atualizar os relatórios: {e}")
+
+    return redirect("admin_relatorios")
+
+def admin_relatorios(request):
+    if not _require_admin(request):
+        return redirect("home")
+
+    db = get_mongo_db()
+    orders = db["orders"]
+
+    # últimos 30 dias (data guardada como "YYYY-MM-DD")
+    today = date.today()
+    start = (today - timedelta(days=29)).isoformat()
+
+    # KPIs base
+    match_30d = {"data": {"$gte": start}}
+    pipeline_total_30d = [
+        {"$match": match_30d},
+        {"$group": {"_id": None, "total": {"$sum": "$total"}, "count": {"$sum": 1}}},
+    ]
+    res_total = list(orders.aggregate(pipeline_total_30d))
+    total_30d = (res_total[0]["total"] if res_total else 0)
+    count_30d = (res_total[0]["count"] if res_total else 0)
+    ticket_medio = (total_30d / count_30d) if count_30d else 0
+
+    # Vendas por dia (30d)
+    pipeline_daily = [
+        {"$match": match_30d},
+        {"$group": {"_id": "$data", "total": {"$sum": "$total"}, "encomendas": {"$sum": 1}}},
+        {"$sort": {"_id": 1}},
+    ]
+    daily = list(orders.aggregate(pipeline_daily))
+
+    # Encomendas por estado
+    pipeline_estado = [
+        {"$group": {"_id": "$estado", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+    ]
+    por_estado = list(orders.aggregate(pipeline_estado))
+
+    # Top produtos (por quantidade)
+    pipeline_top_prod = [
+        {"$unwind": "$linhas"},
+        {"$group": {"_id": "$linhas.nome", "qtd": {"$sum": "$linhas.quantidade"}, "total": {"$sum": "$linhas.subtotal"}}},
+        {"$sort": {"qtd": -1}},
+        {"$limit": 8},
+    ]
+    top_produtos = list(orders.aggregate(pipeline_top_prod))
+
+    # Top fornecedores (por faturação)
+    pipeline_top_forn = [
+        {"$unwind": "$linhas"},
+        {"$group": {"_id": "$linhas.fornecedor_nome", "total": {"$sum": "$linhas.subtotal"}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 8},
+    ]
+    top_fornecedores = list(orders.aggregate(pipeline_top_forn))
+
+    context = {
+        "total_30d": total_30d,
+        "count_30d": count_30d,
+        "ticket_medio": ticket_medio,
+        "daily": daily,
+        "por_estado": por_estado,
+        "top_produtos": top_produtos,
+        "top_fornecedores": top_fornecedores,
+        "start": start,
+        "today": today.isoformat(),
+    }
+    return render(request, "admin/relatorios.html", context)
+
+
 # ======================================================
 #  HELPERS GENÉRICOS PARA SQL
 # ======================================================
