@@ -44,8 +44,8 @@
                         <tr>
                             <td>{{ p.id_produto }}</td>
                             <td>{{ p.nome }}</td>
-                            <td>{{ p.id_tipo_produto.designacao|default:"—" }}</td>
-                            <td>{{ p.id_fornecedor.nome|default:"—" }}</td>
+                            <td>{{ p.tipo_designacao|default:"—" }}</td>
+                            <td>{{ p.fornecedor_nome|default:"—" }}</td>
                             <td>{{ p.preco }} €</td>
                             <td>{{ p.stock }}</td>
                             <td>{{ p.estado_produto }}</td>
@@ -56,7 +56,6 @@
                                 </a>
                                 <span>·</span>
 
-                                <!-- Aprovar -->
                                 <form method="post"
                                       action="{% url 'admin_product_approve' p.id_produto %}"
                                       style="display:inline;">
@@ -70,7 +69,6 @@
 
                                 <span>·</span>
 
-                                <!-- Rejeitar -->
                                 <form method="post"
                                       action="{% url 'admin_product_reject' p.id_produto %}"
                                       style="display:inline;">
@@ -81,7 +79,6 @@
                                         ❌ Rejeitar
                                     </button>
                                 </form>
-
                             </td>
                         </tr>
                     {% endfor %}

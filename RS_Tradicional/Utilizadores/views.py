@@ -2,8 +2,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
-
-from .models import Utilizador, TipoUtilizador
+from django.db import connection, DatabaseError
 
 
 def register_view(request):
@@ -15,34 +14,39 @@ def register_view(request):
         password = request.POST.get("password", "")
         password2 = request.POST.get("password2", "")
 
-        # validações básicas
         if not nome or not email or not nif or not password:
             messages.error(request, "Preenche todos os campos obrigatórios.")
         elif password != password2:
             messages.error(request, "As passwords não coincidem.")
         elif len(nif) != 9 or not nif.isdigit():
             messages.error(request, "O NIF deve ter exatamente 9 dígitos.")
-        elif Utilizador.objects.filter(email=email).exists():
-            messages.error(request, "Já existe um utilizador com esse email.")
         else:
-            # tentar obter o tipo "cliente" (não dá erro se não existir, fica None)
-            tipo_cliente = TipoUtilizador.objects.filter(
-                designacao__iexact="cliente"
-            ).first()
+            password_hash = make_password(password)
 
-            Utilizador.objects.create(
-                nome=nome,
-                email=email,
-                nif=nif,
-                morada=morada if morada else None,
-                password=make_password(password),
-                id_tipo_utilizador=tipo_cliente,  # fica NULL se tipo_cliente for None
-            )
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(
+                        "CALL sp_registar_utilizador_cliente(%s, %s, %s, %s, %s)",
+                        [nome, email, password_hash, morada if morada else None, nif],
+                    )
+            except DatabaseError as e:
+                erro = str(e.__cause__ or e)
 
-            messages.success(request, "Registo efetuado com sucesso! Faz login.")
-            return redirect("login")
+                if "Já existe um utilizador com esse email" in erro:
+                    messages.error(request, "Já existe um utilizador com esse email.")
+                elif "Já existe um utilizador com esse NIF" in erro:
+                    messages.error(request, "Já existe um utilizador com esse NIF.")
+                elif 'Tipo_Utilizador "cliente" não existe' in erro:
+                    messages.error(
+                        request,
+                        "Tipo de utilizador 'cliente' não está configurado na base de dados."
+                    )
+                else:
+                    messages.error(request, f"Ocorreu um erro ao registar: {erro}")
+            else:
+                messages.success(request, "Registo efetuado com sucesso! Faz login.")
+                return redirect("login")
 
-    # paths dos templates como tu já estás a usar
     return render(request, "conta/register.html")
 
 
@@ -51,27 +55,62 @@ def login_view(request):
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "")
 
-        try:
-            user = Utilizador.objects.get(email=email)
-        except Utilizador.DoesNotExist:
-            user = None
+        row = None
 
-        if user is None or not check_password(password, user.password):
+        try:
+            with connection.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT
+                        id_utilizador,
+                        nome,
+                        email,
+                        password,
+                        morada,
+                        nif,
+                        id_tipo_utilizador,
+                        tipo_designacao
+                    FROM fn_get_utilizador_por_email(%s)
+                    """,
+                    [email],
+                )
+                row = cur.fetchone()
+        except DatabaseError as e:
+            messages.error(request, f"Erro ao autenticar: {str(e.__cause__ or e)}")
+            row = None
+
+        if not row:
             messages.error(request, "Credenciais inválidas.")
         else:
-            # guardar dados do utilizador na sessão
-            request.session["user_id"] = user.id_utilizador
-            request.session["user_nome"] = user.nome
-            request.session["user_email"] = user.email
+            (
+                id_utilizador,
+                nome,
+                email_db,
+                password_hash,
+                morada,
+                nif,
+                id_tipo_utilizador,
+                tipo_designacao,
+            ) = row
 
-            # se quiseres guardar o tipo também:
-            if user.id_tipo_utilizador:
-                request.session["user_tipo"] = user.id_tipo_utilizador.designacao
+            # Alguns utilizadores (ex: fornecedor criado por trigger) podem ter password placeholder
+            try:
+                ok_password = check_password(password, password_hash)
+            except ValueError:
+                ok_password = False
+
+            if not ok_password:
+                messages.error(request, "Credenciais inválidas.")
             else:
-                request.session["user_tipo"] = None
+                request.session["user_id"] = id_utilizador
+                request.session["user_nome"] = nome
+                request.session["user_email"] = email_db
 
-            messages.success(request, f"Bem-vindo, {user.nome}!")
-            return redirect("home")
+                # Guardar tipo sempre consistente em lowercase
+                request.session["user_tipo"] = (tipo_designacao or "").lower() or None
+
+                messages.success(request, f"Bem-vindo, {nome}!")
+                return redirect("home")
 
     return render(request, "conta/login.html")
 

@@ -21,7 +21,7 @@
     <div class="home-hero-actions">
         <!-- texto atualizado -->
         <a href="{% url 'loja_produtos' %}" class="btn btn-primary">Ir para a loja</a>
-        <a href="{% url 'minhas_encomendas' %}" class="btn">Fazer encomenda</a>
+        <a href="{% url 'loja_carrinho' %}" class="btn">Fazer encomenda</a>
     </div>
 </section>
 
@@ -64,7 +64,11 @@
                 Aceda aos seus dados, histórico de compras e definições de conta.
             </p>
             <!-- mesmo estilo -->
-            <a class="home-card-link btn btn-primary" href="#">Entrar</a>
+            {% if request.session.user_id %}
+            <a class="home-card-link btn btn-primary" href="{% url 'area_utilizador' %}">Entrar</a>
+        {% else %}
+            <a class="home-card-link btn btn-primary" href="{% url 'login' %}">Entrar</a>
+        {% endif %}
         </article>
     </div>
 </section>

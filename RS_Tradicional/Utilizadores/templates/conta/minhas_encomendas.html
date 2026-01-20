@@ -42,10 +42,25 @@
                             <td>{{ item.total }} €</td>
                             <td class="admin-table-actions">
                                 <a href="{% url 'minha_encomenda_detail' item.encomenda.id_encomenda %}"
-                                   class="admin-table-link">
+                                    class="admin-table-link">
                                     Ver detalhe
                                 </a>
+
+                                {% if item.encomenda.estado_encomenda == "Pendente" %}
+                                <span>·</span>
+                                <form method="post"
+                                    action="{% url 'cliente_cancelar_encomenda' item.encomenda.id_encomenda %}"
+                                    style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="admin-table-link admin-table-link-danger"
+                                        style="border:none;background:none;padding:0;cursor:pointer;">
+                                        Cancelar
+                                    </button>
+                                </form>
+                                {% endif %}
                             </td>
+
                         </tr>
                     {% endfor %}
                 </tbody>

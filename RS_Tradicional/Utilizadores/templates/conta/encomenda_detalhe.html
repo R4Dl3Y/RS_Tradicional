@@ -45,15 +45,10 @@
                 <tbody>
                     {% for linha in linhas %}
                         <tr>
-                            <td>{{ linha.id_produto.nome }}</td>
-                            <td>{{ linha.id_produto.preco }} €</td>
+                            <td>{{ linha.nome_produto|default:"—" }}</td>
+                            <td>{{ linha.preco_produto|floatformat:2 }} €</td>
                             <td>{{ linha.quantidade }}</td>
-                            <td>
-                                {% if linha.id_produto.preco %}
-                                    {{ linha.id_produto.preco|floatformat:2 }} €
-                                    × {{ linha.quantidade }}
-                                {% endif %}
-                            </td>
+                            <td>{{ linha.subtotal|floatformat:2 }} €</td>
                         </tr>
                     {% endfor %}
                 </tbody>

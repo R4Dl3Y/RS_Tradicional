@@ -42,7 +42,7 @@
                         <option value="">— Nenhum —</option>
                         {% for t in tipos %}
                             <option value="{{ t.id_tipo_noticia }}"
-                                {% if noticia.id_tipo_noticia.id_tipo_noticia == t.id_tipo_noticia %}selected{% endif %}>
+                                {% if noticia and noticia.id_tipo_noticia == t.id_tipo_noticia %}selected{% endif %}>
                                 {{ t.nome }}
                             </option>
                         {% endfor %}
